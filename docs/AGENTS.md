@@ -30,7 +30,7 @@ Only the guarantees you would not want left to judgment are code: see [RISK_AND_
 
 ## Models and thinking
 
-Each agent's model is set in `backend/config.yaml` (`agents.default_model`, `agents.models`); `./trader start --llm X`
+Each agent's model is set in `backend/config.yaml` (`agents.default_model`, `agents.models`); `./scripts/trader start --llm X`
 points all of them at one model. Names starting with `local/` run on this machine (Ollama, vLLM, llama.cpp, LM Studio:
 anything OpenAI-compatible at `AIT_LOCAL_LLM_URL`); anything else goes to OpenRouter.
 
@@ -51,7 +51,7 @@ it. See [LOCAL_MODELS.md](LOCAL_MODELS.md) for speeds.
 ## When a model misbehaves
 
 Weak models fail in recognisable ways. Each is caught, turned into "no opinion" (or skip, or hold) rather than a trade,
-and recorded so traces and `./trader llm test` show it:
+and recorded so traces and `./scripts/trader llm test` show it:
 
 | Failure | Seen with | Handling |
 |---|---|---|

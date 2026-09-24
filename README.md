@@ -43,24 +43,24 @@ git clone git@github.com:towardsautonomy/ai-trader.git && cd ai-trader
 cp backend/.env.example backend/.env
 
 # 1. See it run: synthetic market, no keys, trades within seconds
-./trader start --demo                      # then open http://<this-machine>:3400
+./scripts/trader start --demo                      # then open http://<this-machine>:3400
 
 # 2. A real model (local example; see docs/LOCAL_MODELS.md)
-./trader llm pull qwen3.8:27b-q8_0
+./scripts/trader llm pull qwen3.8:27b-q8_0
 printf 'FROM qwen3.8:27b-q8_0\nPARAMETER num_ctx 16384\n' > /tmp/Modelfile && ollama create qwen3.8:27b-q8-16k -f /tmp/Modelfile
-./trader llm test local/qwen3.8:27b-q8-16k NVDA
+./scripts/trader llm test local/qwen3.8:27b-q8-16k NVDA
 
 # 3. Robinhood data (read-only; nothing is placed)
-./trader robinhood login && ./trader robinhood discover && ./trader robinhood verify
+./scripts/trader robinhood login && ./scripts/trader robinhood discover && ./scripts/trader robinhood verify
 
 # 4. Paper trading on real data
-./trader restart --data robinhood --llm local/qwen3.8:27b-q8-16k
+./scripts/trader restart --data robinhood --llm local/qwen3.8:27b-q8-16k
 ```
 
 Going live is a button in the terminal (**SWITCH TO LIVE**), available only when every readiness check passes, and it
-needs a one-time code from `./trader live-code` on the server. See [docs/RISK_AND_SAFETY.md](docs/RISK_AND_SAFETY.md).
+needs a one-time code from `./scripts/trader live-code` on the server. See [docs/RISK_AND_SAFETY.md](docs/RISK_AND_SAFETY.md).
 
-Everyday commands: `./trader status | logs -f | kill [--flatten] | rearm | stop | doctor | test`.
+Everyday commands: `./scripts/trader status | logs -f | kill [--flatten] | rearm | stop | doctor | test`.
 
 ## Documentation
 

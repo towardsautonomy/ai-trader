@@ -3,7 +3,7 @@
 The choice is persisted in `data/mode.json` and overrides AIT_MODE / AIT_LIVE_CONFIRM, so the
 engine restarts into it and stays there across `trader start`. Going live from the dashboard
 needs three things: every readiness check passing, the confirmation phrase typed by hand, and a
-one-time code that only someone with a shell on this machine can print (`./trader live-code`),
+one-time code that only someone with a shell on this machine can print (`scripts/trader live-code`),
 because the dashboard's API token ships inside the browser bundle. A live start that is refused
 falls back to paper and says why; it never leaves the dashboard dead."""
 

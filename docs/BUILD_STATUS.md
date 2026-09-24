@@ -33,11 +33,11 @@
 - [x] Local models: OpenAI-compatible provider, `local/` prefix routing per agent, doctor checks; verified against
       Ollama on this box (llama3.2 warm 0.5-0.8 s; cold load ~95 s)
 
-- [x] Local-model run end to end (2026-09-22, qwen2.5:14b on Ollama, `./trader start --demo --fresh --llm local/qwen2.5:14b`):
+- [x] Local-model run end to end (2026-09-22, qwen2.5:14b on Ollama, `./scripts/trader start --demo --fresh --llm local/qwen2.5:14b`):
       all 7 agents answer with original text, correct shapes after tolerance fixes, ~15 s per candidate, zero transport
       errors. Finding: the 14B model anchors on the regime block (all specialists paraphrase it and copy its confidence),
       so the swarm collapses to one voice and skips everything. Guards added: copied-example detection, input-echo
-      detection, prose-framed user message, tolerant PM/scout shapes. `./trader llm test` is the quick check.
+      detection, prose-framed user message, tolerant PM/scout shapes. `./scripts/trader llm test` is the quick check.
 
 Last verified 2026-09-22: `./check.sh` 279 passing; backend + production frontend run together with zero errors.
 
@@ -62,9 +62,9 @@ Last verified 2026-09-22: `./check.sh` 279 passing; backend + production fronten
 - [x] OLLAMA_NUM_PARALLEL tested (2026-09-23, temporary user-level server): no effect. Ollama 0.34 logs "model
       architecture does not currently support parallel requests" for qwen35 (Qwen3.8). 4 concurrent requests: 72 s with 1
       slot vs 65 s with 4, ~20 tok/s either way. Real batching would need another server (e.g. vLLM) or another model.
-- [x] `./trader start --data robinhood|yfinance|auto` picks the market data source (not with --demo).
+- [x] `./scripts/trader start --data robinhood|yfinance|auto` picks the market data source (not with --demo).
 - [x] Dashboard SETUP page (2026-09-23): trading mode + guarded paper/live switch (readiness must pass, typed phrase,
-      one-time code from `./trader live-code` because the API token ships in the browser bundle; restart via re-exec;
+      one-time code from `./scripts/trader live-code` because the API token ships in the browser bundle; restart via re-exec;
       refused live start falls back to paper), live readiness checklist against the real systems, Robinhood panel,
       per-agent models/thinking. Status bar names the market data source, where orders go, the agentic account and model;
       DEMO badge + banner; long event messages clamp to two lines. Choice persisted in data/mode.json.
@@ -81,7 +81,7 @@ Last verified 2026-09-22: `./check.sh` 279 passing; backend + production fronten
       average 170 s against a 120 s interval; regime/market note are lost on restart.
 - [ ] No news/catalyst/earnings input exists yet. Robinhood exposes news and earnings tools, not wired in.
 
-Last verified 2026-09-23: `./check.sh` 341 passing; `./trader robinhood verify` passing against the real server.
+Last verified 2026-09-23: `./check.sh` 341 passing; `./scripts/trader robinhood verify` passing against the real server.
 
 ## Bugs found by tests / real runs and fixed (each has a regression test)
 - naive vs aware datetimes from SQLite; clamped stop rounding past the 3% limit; adjusted target rounding onto the market

@@ -28,11 +28,11 @@ Two levels: **HALT** stops new entries (open trades keep their stops and targets
 everything. It survives restarts, never re-arms itself, and has four independent ways in:
 
 ```bash
-./trader kill               # HALT: drops a marker file, works even if the API is wedged or down
-./trader kill --flatten     # FLATTEN
+./scripts/trader kill               # HALT: drops a marker file, works even if the API is wedged or down
+./scripts/trader kill --flatten     # FLATTEN
 touch backend/data/KILL_FLATTEN
 # or HALT / FLATTEN in the terminal header (Shift+K), or POST /api/kill
-./trader rearm              # deliberate: type REARM
+./scripts/trader rearm              # deliberate: type REARM
 ```
 
 It trips itself on the daily loss limit, the drawdown limit, a broker error streak, a market-data outage, a model
@@ -48,7 +48,7 @@ default, and live mode must clear all of these at every start (`app/runtime.py`)
 3. Market data from Robinhood; synthetic data and an ignored clock are refused.
 4. Logged in to Robinhood, exactly one account marked agent-tradable, and its options level known (below level 2,
    options are switched off and only shares trade).
-5. The adapter passed `./trader robinhood verify`, and Robinhood's tool schemas are unchanged since then.
+5. The adapter passed `./scripts/trader robinhood verify`, and Robinhood's tool schemas are unchanged since then.
 
 ## Switching modes from the dashboard
 
@@ -56,7 +56,7 @@ SETUP shows a live-readiness checklist evaluated against the real systems: not t
 verified, schemas unchanged, one agentic account, account funded, broker positions match the live ledger, kill switch
 armed, and (advisory) a paper track record.
 
-The switch to live requires all blocking checks to pass, the typed phrase, and a one-time code from `./trader
+The switch to live requires all blocking checks to pass, the typed phrase, and a one-time code from `./scripts/trader
 live-code` (6 digits, 10 minutes, single use, burned by any wrong guess). The code exists because the dashboard's API
 token is compiled into the browser bundle: anyone who can load the page can call the API, but only someone with a shell
 on the machine can print a code.

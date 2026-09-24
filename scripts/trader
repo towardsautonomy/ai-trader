@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# AI Trader control script. Run from anywhere:  /floppy/workspace/ai_trader/trader <command>
+# AI Trader control script. Run from anywhere:  /floppy/workspace/ai_trader/scripts/trader <command>
 #
 #   trader start [--demo] [--dev] [--local] [--rebuild]   backend + frontend, detached, with logs
 #   trader stop                                            stop both
@@ -14,6 +14,7 @@
 #   trader llm pull <name>                                 download a model into Ollama
 #   trader llm test [local/<name>|<openrouter model>] [SYM] one real deliberation, every agent's answer, timings
 #   trader robinhood login|discover|verify                 broker setup
+#   trader vllm start|stop|status|logs                     local vLLM server (batches the agents' requests)
 #   trader live-code                                       one-time code the dashboard asks for when switching to LIVE
 #
 # start flags:
@@ -25,11 +26,11 @@
 #   --rebuild        force a fresh frontend production build
 #   --fresh          (demo only) wipe the demo data dir first, so results are only from this run
 #
-# Local models: with Ollama running, `local/<name>` models need nothing else; AIT_LOCAL_LLM_URL is
-# set to http://127.0.0.1:11434/v1 automatically when unset and Ollama answers there.
+# Local models: `local/<name>` needs nothing else when vLLM (scripts/vllm.sh) serves <name> or Ollama is up;
+# AIT_LOCAL_LLM_URL is set automatically when unset (vLLM first when it serves that name, else Ollama).
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BACKEND="$ROOT/backend"; FRONTEND="$ROOT/frontend"; RUN="$ROOT/.run"; LOGS="$RUN/logs"
 BACKEND_PORT="${AIT_PORT:-8400}"; FRONTEND_PORT="${AIT_UI_PORT:-3400}"
 mkdir -p "$LOGS"
@@ -66,11 +67,15 @@ launch() {  # launch <name> <dir> <ENV=VAL...> -- <command...>
 
 # ---------------------------------------------------------------- start
 OLLAMA_URL="http://127.0.0.1:11434/v1"
+VLLM_URL="http://127.0.0.1:${VLLM_PORT:-8001}/v1"
 
 local_llm_env() {
-    # Print AIT_LOCAL_LLM_URL=... when a local server is configured or Ollama is up; nothing otherwise.
+    # Print AIT_LOCAL_LLM_URL=... for the local server that should serve model $1 (local/<name>): an explicit
+    # setting wins; else vLLM when it is up and serves that name (scripts/vllm.sh); else Ollama when it is up.
+    local name="${1#local/}"
     if [ -n "${AIT_LOCAL_LLM_URL:-}" ]; then echo "AIT_LOCAL_LLM_URL=$AIT_LOCAL_LLM_URL"
     elif grep -qs '^AIT_LOCAL_LLM_URL=.\+' "$BACKEND/.env"; then :
+    elif [ -n "$name" ] && curl -sf -m 2 "$VLLM_URL/models" 2>/dev/null | grep -q "\"$name\""; then echo "AIT_LOCAL_LLM_URL=$VLLM_URL"
     elif curl -sf -m 2 "$OLLAMA_URL/models" >/dev/null 2>&1; then echo "AIT_LOCAL_LLM_URL=$OLLAMA_URL"; fi
 }
 
@@ -103,7 +108,7 @@ cmd_start() {
         [ "$fresh" = 1 ] && rm -rf "$BACKEND/data/demo" && echo "demo data wiped"
     elif [ "$fresh" = 1 ]; then red "--fresh only applies to --demo (real paper history is never wiped by this script)"; exit 1; fi
     [ -n "$data" ] && benv+=(AIT_DATA_SOURCE="$data")
-    local lenv; lenv="$(local_llm_env)"; [ -n "$lenv" ] && benv+=("$lenv")
+    local lenv; lenv="$(local_llm_env "$model")"; [ -n "$lenv" ] && benv+=("$lenv")
     if [ -n "$model" ]; then
         benv+=(AIT_MODEL="$model")
         case "$model" in local/*) [ -n "$lenv" ] || grep -qs '^AIT_LOCAL_LLM_URL=.\+' "$BACKEND/.env" \
@@ -217,8 +222,8 @@ cmd_test() {
     green "all checks passed"
 }
 
-backend_env_cli() {  # backend CLI with the local-LLM URL discovered, for commands that need models
-    local lenv; lenv="$(local_llm_env)"
+backend_env_cli() {  # backend CLI with the local-LLM URL discovered (for model $LLM_FOR, if set)
+    local lenv; lenv="$(local_llm_env "${LLM_FOR:-}")"
     ( cd "$BACKEND" && env ${lenv:+"$lenv"} ./ait "$@" )
 }
 
@@ -231,7 +236,7 @@ cmd_llm() {
             local model="" sym="NVDA"
             for a in "$@"; do case "$a" in */*) model="$a";; *) sym="$a";; esac; done
             [ -n "$model" ] && set -- --model "$model" --symbol "$sym" || set -- --symbol "$sym"
-            backend_env_cli llm test "$@";;
+            LLM_FOR="$model" backend_env_cli llm test "$@";;
         *) red "usage: trader llm models | pull <name> | test [model] [SYMBOL]"; exit 1;;
     esac
 }
@@ -258,6 +263,7 @@ case "$cmd" in
     llm)      cmd_llm "$@";;
     robinhood) ( cd "$BACKEND" && ./ait robinhood "$@" );;
     live-code) backend_cli live-code;;
+    vllm)     "$ROOT/scripts/vllm.sh" "$@";;
     help|-h|--help) sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//';;
     *) red "unknown command: $cmd"; sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'; exit 1;;
 esac

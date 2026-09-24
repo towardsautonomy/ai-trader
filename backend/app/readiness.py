@@ -99,18 +99,18 @@ async def live_readiness(rt: Runtime, probe: RobinhoodProbe) -> dict:
     unresolved = [m for m in models if not m["resolved"]]
     checks = [
         _check("not_demo", "Not the demo", not demo, "running the synthetic demo market" if demo else "real market data",
-               "restart without --demo: ./trader restart --data robinhood --llm <model>"),
+               "restart without --demo: scripts/trader restart --data robinhood --llm <model>"),
         _check("models", "Every agent has a real model", not unresolved and rt.llm_label != "offline-heuristic",
                "offline heuristic stand-in" if rt.llm_label == "offline-heuristic" else
                (f"no provider for {', '.join(m['agent'] for m in unresolved)}" if unresolved else f"{len(models)} agents resolve ({rt.llm_label})"),
                "start with --llm local/<model>, or set AIT_OPENROUTER_API_KEY"),
         _check("login", "Logged in to Robinhood", rh["logged_in"], "tokens present" if rh["logged_in"] else "no Robinhood session",
-               "./trader robinhood login"),
+               "scripts/trader robinhood login"),
         _check("verified", "Adapter verified", bool(rh["verified_at"]), f"verified {str(rh['verified_at'])[:16].replace('T', ' ')} UTC" if rh["verified_at"] else "never verified",
-               "./trader robinhood verify"),
+               "scripts/trader robinhood verify"),
         _check("schemas", "Robinhood tools unchanged since verify", rh["schemas_current"],
                {True: "schemas match", False: "Robinhood changed its tools", None: "not checked (needs login + verify)"}[rh["schemas_current"]],
-               "./trader robinhood verify (and read what changed)"),
+               "scripts/trader robinhood verify (and read what changed)"),
         _check("account", "One agentic account", rh["account"] is not None,
                f"...{rh['account']['last4']} {rh['account']['type']}, {rh['account']['option_level']}" if rh["account"] else (rh["error"] or "unknown"),
                "enable Agentic trading for exactly one account in the Robinhood app"),

@@ -2,9 +2,9 @@
 
 ```bash
 cd backend && ./check.sh        # the backend suite (~20 s)
-./trader test                   # the suite + frontend lint and typecheck
-./trader llm test local/<model> NVDA   # one real deliberation on live data with a real model
-./trader robinhood verify       # the Robinhood adapter against the real server (no orders)
+./scripts/trader test                   # the suite + frontend lint and typecheck
+./scripts/trader llm test local/<model> NVDA   # one real deliberation on live data with a real model
+./scripts/trader robinhood verify       # the Robinhood adapter against the real server (no orders)
 ```
 
 What the suite covers:

@@ -81,7 +81,7 @@ async def test_readiness_lists_every_gate_and_is_not_ready_without_robinhood(api
     r = (await api.get("/api/live/readiness")).json()
     ids = {c["id"]: c for c in r["checks"]}
     assert not r["ready"] and {"models", "login", "verified", "schemas", "account", "funded", "positions_match", "kill"} <= set(ids)
-    assert ids["login"]["ok"] is False and ids["login"]["fix"] == "./trader robinhood login"
+    assert ids["login"]["ok"] is False and ids["login"]["fix"] == "scripts/trader robinhood login"
     assert ids["track_record"]["blocking"] is False
     rh = (await api.get("/api/robinhood")).json()
     assert rh["logged_in"] is False and rh["in_use"] is False

@@ -1,7 +1,7 @@
 # Architecture
 
 Two processes: a Python backend that trades (FastAPI + SQLite, `backend/`) and a Next.js terminal that watches it
-(`frontend/`). The `trader` script at the top level starts, stops and supervises both.
+(`frontend/`). `scripts/trader` starts, stops and supervises both.
 
 ```
                     ┌──────────────── backend (one process) ────────────────┐
@@ -73,7 +73,7 @@ backend/
 frontend/src/
   app/                        pages: terminal, history, agents, log, setup, decision and position traces
   components/                 panels, kill switch, setup panels
-trader                        the control script
+scripts/                      trader (the control script), vllm.sh, start/stop/status/kill shortcuts
 ```
 
 ## Persistence

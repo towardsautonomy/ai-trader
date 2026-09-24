@@ -7,7 +7,7 @@ streamable HTTP with OAuth 2.1 (dynamic client registration, PKCE, refresh token
 There is **no sandbox**. Orders are real.
 
 ## 1. Login
-`./trader robinhood login` prints an authorisation URL (and tries to open a browser). Approve in Robinhood; it then
+`./scripts/trader robinhood login` prints an authorisation URL (and tries to open a browser). Approve in Robinhood; it then
 redirects the browser to `http://127.0.0.1:8765/callback?code=...`.
 
 - Browser on the same machine as the engine: the redirect completes the login by itself.
@@ -19,7 +19,7 @@ Tokens land in `backend/data/robinhood_tokens.json` (mode 600, git-ignored). Ref
 ever revoked the engine reports it and you log in again.
 
 ## 2. Discover
-`./trader robinhood discover` writes every tool the server exposes, with its input schema, to
+`./scripts/trader robinhood discover` writes every tool the server exposes, with its input schema, to
 `backend/data/robinhood_tools.json`, and checks that the tools the adapter uses are all present.
 
 The adapter (`backend/app/broker/robinhood_mcp.py`) is written against the real tools, learned from the live server on
@@ -37,7 +37,7 @@ Every reply is wrapped as `{"data": ..., "guide": ...}`; the adapter reads `data
 contract's tick (e.g. $0.05 above $3): buys round up, sells round down.
 
 ## 3. Verify
-`./trader robinhood verify` checks, without placing anything: the tools are present, exactly one agentic account exists and
+`./scripts/trader robinhood verify` checks, without placing anything: the tools are present, exactly one agentic account exists and
 its options level, balance, positions, a quote, 5m bars, a near-the-money option chain, and the order format through
 Robinhood's own simulator (`review_equity_order`, 1 share far below the market). Passing pins a digest of the used tools'
 input schemas. Live mode re-reads the schemas at every start and refuses if they changed since the last verify.

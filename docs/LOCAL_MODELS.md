@@ -7,7 +7,7 @@ Local models cost nothing per call and never leave the machine. They are slower 
 
 Measured on an RTX A6000 (48 GB), 2026-09-22/23:
 
-| Model | Result on `./trader llm test` and in paper runs |
+| Model | Result on `./scripts/trader llm test` and in paper runs |
 |---|---|
 | llama3.2 3B, 8B-class | copies worked examples from the prompt instead of reading the data |
 | qwen2.5:14b | answers are original and well-formed, but all four specialists paraphrase the regime with one confidence: the swarm collapses to one voice and skips everything |
@@ -17,11 +17,11 @@ Measured on an RTX A6000 (48 GB), 2026-09-22/23:
 ## Ollama setup
 
 ```bash
-./trader llm pull qwen3.8:27b-q8_0                  # 30 GB; needs Ollama 0.34+
+./scripts/trader llm pull qwen3.8:27b-q8_0                  # 30 GB; needs Ollama 0.34+
 printf 'FROM qwen3.8:27b-q8_0\nPARAMETER num_ctx 16384\n' > /tmp/Modelfile
 ollama create qwen3.8:27b-q8-16k -f /tmp/Modelfile  # 16K context: the default 262K fills 45 GB of VRAM
-./trader llm test local/qwen3.8:27b-q8-16k NVDA
-./trader start --data robinhood --llm local/qwen3.8:27b-q8-16k
+./scripts/trader llm test local/qwen3.8:27b-q8-16k NVDA
+./scripts/trader start --data robinhood --llm local/qwen3.8:27b-q8-16k
 ```
 
 The largest prompt the desk sends is about 7,300 tokens (the scout's universe table), so 16K leaves room for thinking.

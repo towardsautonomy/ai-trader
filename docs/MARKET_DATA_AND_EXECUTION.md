@@ -2,7 +2,7 @@
 
 ## Sources
 
-`AIT_DATA_SOURCE` or `./trader start --data ...`:
+`AIT_DATA_SOURCE` or `./scripts/trader start --data ...`:
 
 | Source | Used for | Notes |
 |---|---|---|

@@ -75,7 +75,7 @@ class RearmBody(BaseModel):
 class ModeBody(BaseModel):
     mode: str            # paper | live
     confirm: str = ""    # live: the exact confirmation phrase
-    code: str = ""       # live: one-time code from `./trader live-code` on the server
+    code: str = ""       # live: one-time code from `scripts/trader live-code` on the server
 
 
 def reexec() -> None:
@@ -172,7 +172,7 @@ def create_app(runtime: Runtime | None = None, start_engine: bool = True, restar
             if body.confirm.strip() != LIVE_CONFIRM_PHRASE:
                 raise HTTPException(400, "the confirmation phrase does not match")
             if not consume_code(r.settings.data_dir, body.code):
-                raise HTTPException(403, "wrong or expired code: run `./trader live-code` on the server for a new one")
+                raise HTTPException(403, "wrong or expired code: run `scripts/trader live-code` on the server for a new one")
             write_choice(r.settings.data_dir, "live", live_confirm=LIVE_CONFIRM_PHRASE)
         else:
             async with r.db.session() as sess:

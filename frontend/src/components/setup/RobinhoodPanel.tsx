@@ -44,8 +44,8 @@ export function RobinhoodPanel({ className = "" }: { className?: string }) {
       <QueryBody query={q} what="Robinhood">
         {(r) => (
           <div className="pb-1">
-            <Row label="login">{yes(r.logged_in, "logged in", "not logged in: ./trader robinhood login")}</Row>
-            <Row label="adapter">{r.verified_at ? <span className="text-phos">verified {dateTime(r.verified_at)}</span> : <span className="text-amber">not verified: ./trader robinhood verify</span>}</Row>
+            <Row label="login">{yes(r.logged_in, "logged in", "not logged in: scripts/trader robinhood login")}</Row>
+            <Row label="adapter">{r.verified_at ? <span className="text-phos">verified {dateTime(r.verified_at)}</span> : <span className="text-amber">not verified: scripts/trader robinhood verify</span>}</Row>
             <Row label="tool schemas">
               {r.schemas_current === null ? <span className="text-dim">not checked</span> : yes(r.schemas_current, "unchanged since verify", "CHANGED since verify: re-run verify")}
             </Row>

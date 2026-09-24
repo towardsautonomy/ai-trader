@@ -19,7 +19,7 @@ function Current({ mode, demo, source }: { mode: Mode; demo: boolean; source: st
           Synthetic market, clock ignored, separate demo data. Nothing here is real and no mode switch is possible. For paper trading on real Robinhood
           data run:
         </div>
-        <pre className="mt-1 select-all border border-line bg-panel px-2 py-1 text-amber">./trader restart --data robinhood --llm local/qwen3.8:27b-q8-16k</pre>
+        <pre className="mt-1 select-all border border-line bg-panel px-2 py-1 text-amber">scripts/trader restart --data robinhood --llm local/qwen3.8:27b-q8-16k</pre>
       </div>
     );
   }
@@ -105,7 +105,7 @@ export function ModePanel({ className = "" }: { className?: string }) {
             {armed ? (
               <ol className="mt-2 list-decimal space-y-2 pl-5">
                 <li>
-                  On the server, run <code className="select-all text-amber">./trader live-code</code>. It prints a 6-digit code valid for 10 minutes. This proves a
+                  On the server, run <code className="select-all text-amber">scripts/trader live-code</code>. It prints a 6-digit code valid for 10 minutes. This proves a
                   person with shell access is doing this; the dashboard token alone cannot.
                   <input
                     className="input mt-1 block w-32 tracking-[0.3em]"
