@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# AI Trader CLI wrapper:  ./ait run | kill [--flatten] | rearm | status | doctor | robinhood login|discover|verify
+cd "$(dirname "$0")" && PYTHONPATH=. exec uv run python -m app.cli "$@"

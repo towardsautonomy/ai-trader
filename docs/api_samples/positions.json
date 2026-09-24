@@ -1,0 +1,42 @@
+[
+    {
+        "id": "70eafd706e014c92",
+        "decision_id": "97bb592aeb544670",
+        "mode": "paper",
+        "symbol": "ORCL",
+        "instrument": {
+            "symbol": "ORCL",
+            "right": null,
+            "strike": null,
+            "expiry": null
+        },
+        "instrument_key": "ORCL",
+        "direction": 1,
+        "qty": 21,
+        "entry_price": 469.6439,
+        "entry_ts": "2026-09-21T06:59:11.150682+00:00",
+        "initial_stop": 467.36,
+        "stop_price": 467.36,
+        "target_price": 473.75,
+        "und_stop": 0.0,
+        "und_target": 0.0,
+        "max_hold_minutes": 120,
+        "thesis": "[offline heuristic] specialists net +1.06",
+        "invalidation": "stop level",
+        "atr": 1.066055726525698,
+        "high_water": 474.14,
+        "low_water": 469.45,
+        "last_price": 474.14,
+        "risk_usd": 52.71,
+        "status": "closed",
+        "exit_price": 473.7952,
+        "exit_ts": "2026-09-21T06:59:36.014794+00:00",
+        "exit_reason": "take_profit",
+        "exit_detail": "bid 474.14 >= target 473.75 (+1.0%)",
+        "realized_pnl": 87.18,
+        "fees": 0.0,
+        "unrealized_pnl": 0.0,
+        "pnl_r": 1.65,
+        "is_option": false
+    }
+]

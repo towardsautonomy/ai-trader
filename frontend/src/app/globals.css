@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: #050807;
+  color: #b9d8c4;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-width: 1000px;
+}
+
+::selection {
+  background: #3dff8b;
+  color: #050807;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2f4a3b #090d0b;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: #090d0b;
+}
+*::-webkit-scrollbar-thumb {
+  background: #2f4a3b;
+}
+
+:focus-visible {
+  outline: 1px solid #4fd6ff;
+  outline-offset: 1px;
+}
+
+@layer components {
+  .tbl {
+    @apply w-full border-collapse text-sm;
+  }
+  .tbl th {
+    @apply sticky top-0 z-[1] whitespace-nowrap border-b border-line bg-panel px-2 py-1 text-left text-2xs font-normal uppercase tracking-wider text-dim;
+  }
+  .tbl td {
+    @apply whitespace-nowrap border-b border-line/60 px-2 py-1 align-top;
+  }
+  .tbl th.r,
+  .tbl td.r {
+    @apply text-right;
+  }
+  .tbl tr.click {
+    @apply cursor-pointer hover:bg-raised;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center whitespace-nowrap border border-line-hi bg-transparent px-2 py-0.5 text-xs uppercase tracking-wider text-fg transition-colors hover:border-phos hover:text-phos disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-line-hi disabled:hover:text-fg;
+  }
+  .btn-danger {
+    @apply border-danger/70 text-danger hover:border-danger hover:bg-danger hover:text-bg disabled:hover:border-danger/70 disabled:hover:bg-transparent disabled:hover:text-danger;
+  }
+  .btn-amber {
+    @apply border-amber/70 text-amber hover:border-amber hover:bg-amber hover:text-bg disabled:hover:border-amber/70 disabled:hover:bg-transparent disabled:hover:text-amber;
+  }
+  .input {
+    @apply border border-line-hi bg-bg px-2 py-0.5 text-sm text-fg placeholder:text-faint focus:border-cyan focus:outline-none;
+  }
+  .link {
+    @apply text-cyan underline-offset-2 hover:underline;
+  }
+  .label {
+    @apply text-2xs uppercase tracking-wider text-dim;
+  }
+}
+
+/* Faint CRT scanlines. Pointer-events none and ~3% opacity: never at the cost of legibility. */
+.scanlines {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: repeating-linear-gradient(to bottom, rgba(61, 255, 139, 0.035) 0px, rgba(61, 255, 139, 0.035) 1px, transparent 1px, transparent 3px);
+}

@@ -1,0 +1,50 @@
+[
+    {
+        "id": "5ed1cfb8bf084b47",
+        "ts": "2026-09-21T06:59:36.003041+00:00",
+        "updated_ts": "2026-09-21T06:59:36.010500+00:00",
+        "decision_id": "97bb592aeb544670",
+        "position_id": "70eafd706e014c92",
+        "mode": "paper",
+        "broker_order_id": "5ed1cfb8bf084b47",
+        "instrument_key": "ORCL",
+        "instrument": {
+            "symbol": "ORCL",
+            "right": null,
+            "strike": null,
+            "expiry": null
+        },
+        "side": "sell",
+        "qty": 21,
+        "limit_price": 473.29,
+        "reason": "take_profit",
+        "status": "filled",
+        "filled_qty": 21,
+        "avg_fill_price": 473.7952,
+        "message": ""
+    },
+    {
+        "id": "a6045ddf54734c32",
+        "ts": "2026-09-21T06:59:11.092844+00:00",
+        "updated_ts": "2026-09-21T06:59:11.148549+00:00",
+        "decision_id": "97bb592aeb544670",
+        "position_id": "70eafd706e014c92",
+        "mode": "paper",
+        "broker_order_id": "a6045ddf54734c32",
+        "instrument_key": "ORCL",
+        "instrument": {
+            "symbol": "ORCL",
+            "right": null,
+            "strike": null,
+            "expiry": null
+        },
+        "side": "buy",
+        "qty": 21,
+        "limit_price": 469.87,
+        "reason": "entry",
+        "status": "filled",
+        "filled_qty": 21,
+        "avg_fill_price": 469.6439,
+        "message": ""
+    }
+]

@@ -1,0 +1,101 @@
+[
+    {
+        "agent": "scout",
+        "model": "offline-heuristic",
+        "calls": 0,
+        "right": 0,
+        "hit_rate": null,
+        "calls_today": 1,
+        "cost_today": 0,
+        "avg_latency_ms": 0,
+        "errors_today": 0
+    },
+    {
+        "agent": "regime",
+        "model": "offline-heuristic",
+        "calls": 0,
+        "right": 0,
+        "hit_rate": null,
+        "calls_today": 1,
+        "cost_today": 0,
+        "avg_latency_ms": 0,
+        "errors_today": 0
+    },
+    {
+        "agent": "momentum",
+        "model": "offline-heuristic",
+        "calls": 1,
+        "right": 1,
+        "hit_rate": 1.0,
+        "calls_today": 5,
+        "cost_today": 0,
+        "avg_latency_ms": 0,
+        "errors_today": 0
+    },
+    {
+        "agent": "mean_reversion",
+        "model": "offline-heuristic",
+        "calls": 1,
+        "right": 0,
+        "hit_rate": 0.0,
+        "calls_today": 5,
+        "cost_today": 0,
+        "avg_latency_ms": 0,
+        "errors_today": 0
+    },
+    {
+        "agent": "volatility",
+        "model": "offline-heuristic",
+        "calls": 1,
+        "right": 1,
+        "hit_rate": 1.0,
+        "calls_today": 5,
+        "cost_today": 0,
+        "avg_latency_ms": 0,
+        "errors_today": 0
+    },
+    {
+        "agent": "skeptic",
+        "model": "offline-heuristic",
+        "calls": 0,
+        "right": 0,
+        "hit_rate": null,
+        "calls_today": 5,
+        "cost_today": 0,
+        "avg_latency_ms": 0,
+        "errors_today": 0
+    },
+    {
+        "agent": "portfolio_manager",
+        "model": "offline-heuristic",
+        "calls": 0,
+        "right": 0,
+        "hit_rate": null,
+        "calls_today": 5,
+        "cost_today": 0,
+        "avg_latency_ms": 0,
+        "errors_today": 0
+    },
+    {
+        "agent": "position_manager",
+        "model": "offline-heuristic",
+        "calls": 0,
+        "right": 0,
+        "hit_rate": null,
+        "calls_today": 0,
+        "cost_today": 0.0,
+        "avg_latency_ms": 0,
+        "errors_today": 0
+    },
+    {
+        "agent": "reviewer",
+        "model": "offline-heuristic",
+        "calls": 0,
+        "right": 0,
+        "hit_rate": null,
+        "calls_today": 1,
+        "cost_today": 0,
+        "avg_latency_ms": 0,
+        "errors_today": 0
+    }
+]

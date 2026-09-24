@@ -1,0 +1,18 @@
+[
+    {
+        "id": 1,
+        "ts": "2026-09-21T06:59:36.027602+00:00",
+        "position_id": "70eafd706e014c92",
+        "symbol": "ORCL",
+        "vehicle": "shares",
+        "outcome_r": 1.65,
+        "tags": [
+            "offline"
+        ],
+        "situation": "ORCL shares",
+        "what_happened": "closed take_profit at +1.65R",
+        "lesson": "[offline heuristic] no lesson: reviewer needs a real model",
+        "model": "offline-heuristic",
+        "cost_usd": 0.0
+    }
+]

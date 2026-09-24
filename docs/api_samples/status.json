@@ -1,0 +1,90 @@
+{
+    "mode": "paper",
+    "data_source": "synthetic",
+    "broker": "paper",
+    "llm": "offline-heuristic",
+    "kill": {
+        "state": "armed",
+        "reason": "",
+        "source": "",
+        "since": null
+    },
+    "account": {
+        "equity": 100246.51,
+        "cash": 100246.51,
+        "day_start_equity": 100000.0,
+        "day_pnl": 246.51,
+        "day_pnl_pct": 0.247,
+        "drawdown_pct": 0.004,
+        "exposure": 0,
+        "exposure_pct": 0.0,
+        "open_positions": 0,
+        "trades_today": 1,
+        "llm_spend_today": 0.0
+    },
+    "account_error": "",
+    "session": {
+        "is_open": true,
+        "phase": "open",
+        "entries_allowed": true,
+        "seconds_to_close": null,
+        "next_open": null
+    },
+    "limits": {
+        "max_daily_loss_pct": 2.0,
+        "max_drawdown_pct": 6.0,
+        "max_open_positions": 8,
+        "max_total_exposure_pct": 100.0,
+        "max_trades_per_day": 40,
+        "max_llm_spend_per_day_usd": 15.0
+    },
+    "engine": {
+        "entry": {
+            "seconds_since_tick": 41.0,
+            "interval": 120,
+            "overdue": false,
+            "last_error": ""
+        },
+        "exit": {
+            "seconds_since_tick": 1.0,
+            "interval": 5,
+            "overdue": false,
+            "last_error": ""
+        },
+        "review": {
+            "seconds_since_tick": 41.0,
+            "interval": 120,
+            "overdue": false,
+            "last_error": ""
+        },
+        "watchdog": {
+            "seconds_since_tick": 1.0,
+            "interval": 10,
+            "overdue": false,
+            "last_error": ""
+        }
+    },
+    "regime": {
+        "label": "offline",
+        "bias": "neutral",
+        "confidence": 0.4,
+        "summary": "[offline heuristic] 53% of universe above VWAP",
+        "what_works": ""
+    },
+    "market_note": "offline mode",
+    "last_cycle": {
+        "ts": "2026-09-21T07:23:14.415657+00:00",
+        "cycle_id": "b1e9c91eb5b14b9c",
+        "scanned": 38,
+        "picked": [
+            "ORCL",
+            "PLTR",
+            "MSFT",
+            "MU",
+            "SMCI"
+        ],
+        "entered": 1,
+        "seconds": 0.2
+    },
+    "server_time": "2026-09-21T07:23:55.155468+00:00"
+}

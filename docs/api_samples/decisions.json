@@ -1,0 +1,107 @@
+[
+    {
+        "id": "8a743a6a93334a3c",
+        "ts": "2026-09-21T06:59:11.059242+00:00",
+        "symbol": "SMCI",
+        "status": "unbuildable",
+        "outcome": "plan could not be built: premium budget $500 does not cover one contract at 8.92",
+        "scout_reason": "[offline heuristic] momentum_breakout",
+        "pm_action": "enter",
+        "pm_vehicle": "long_call",
+        "pm_direction": "long",
+        "pm_confidence": 0.67,
+        "pm_summary": "[offline heuristic] specialists net +1.70",
+        "stances": [
+            {
+                "agent": "momentum",
+                "stance": "bullish",
+                "confidence": 0.85
+            },
+            {
+                "agent": "mean_reversion",
+                "stance": "neutral",
+                "confidence": 0.45
+            },
+            {
+                "agent": "volatility",
+                "stance": "bullish",
+                "confidence": 0.85
+            },
+            {
+                "agent": "skeptic",
+                "stance": "neutral",
+                "confidence": 0.3
+            }
+        ]
+    },
+    {
+        "id": "c7064ec1d2e741ac",
+        "ts": "2026-09-21T06:59:11.041648+00:00",
+        "symbol": "MU",
+        "status": "unbuildable",
+        "outcome": "plan could not be built: premium budget $500 does not cover one contract at 9.31",
+        "scout_reason": "[offline heuristic] momentum_breakout",
+        "pm_action": "enter",
+        "pm_vehicle": "long_call",
+        "pm_direction": "long",
+        "pm_confidence": 0.67,
+        "pm_summary": "[offline heuristic] specialists net +1.70",
+        "stances": [
+            {
+                "agent": "momentum",
+                "stance": "bullish",
+                "confidence": 0.85
+            },
+            {
+                "agent": "mean_reversion",
+                "stance": "neutral",
+                "confidence": 0.45
+            },
+            {
+                "agent": "volatility",
+                "stance": "bullish",
+                "confidence": 0.85
+            },
+            {
+                "agent": "skeptic",
+                "stance": "neutral",
+                "confidence": 0.3
+            }
+        ]
+    },
+    {
+        "id": "902d6556e1934c82",
+        "ts": "2026-09-21T06:59:11.020060+00:00",
+        "symbol": "MSFT",
+        "status": "unbuildable",
+        "outcome": "plan could not be built: premium budget $500 does not cover one contract at 9.49",
+        "scout_reason": "[offline heuristic] momentum_breakdown, oversold_reversion",
+        "pm_action": "enter",
+        "pm_vehicle": "long_put",
+        "pm_direction": "short",
+        "pm_confidence": 0.59,
+        "pm_summary": "[offline heuristic] specialists net -0.93",
+        "stances": [
+            {
+                "agent": "momentum",
+                "stance": "bearish",
+                "confidence": 0.72
+            },
+            {
+                "agent": "mean_reversion",
+                "stance": "bullish",
+                "confidence": 0.64
+            },
+            {
+                "agent": "volatility",
+                "stance": "bearish",
+                "confidence": 0.85
+            },
+            {
+                "agent": "skeptic",
+                "stance": "neutral",
+                "confidence": 0.3
+            }
+        ]
+    }
+]

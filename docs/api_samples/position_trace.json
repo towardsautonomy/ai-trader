@@ -1,0 +1,879 @@
+{
+    "position": {
+        "id": "2bcca347669d42ce",
+        "decision_id": "b17ab1da0b534578",
+        "mode": "paper",
+        "symbol": "ORCL",
+        "instrument": {
+            "symbol": "ORCL",
+            "right": null,
+            "strike": null,
+            "expiry": null
+        },
+        "instrument_key": "ORCL",
+        "direction": 1,
+        "qty": 53,
+        "entry_price": 469.6439,
+        "entry_ts": "2026-09-21T07:23:14.393397+00:00",
+        "initial_stop": 467.36,
+        "stop_price": 467.36,
+        "target_price": 473.75,
+        "und_stop": 0.0,
+        "und_target": 0.0,
+        "max_hold_minutes": 120,
+        "thesis": "[offline heuristic] specialists net +1.06",
+        "invalidation": "stop level",
+        "atr": 1.066055726525698,
+        "high_water": 474.16,
+        "low_water": 469.48,
+        "last_price": 474.16,
+        "risk_usd": 133.03,
+        "status": "closed",
+        "exit_price": 474.2951,
+        "exit_ts": "2026-09-21T07:23:34.244194+00:00",
+        "exit_reason": "take_profit",
+        "exit_detail": "bid 474.16 >= target 473.75 (+1.0%)",
+        "realized_pnl": 246.51,
+        "fees": 0.0,
+        "unrealized_pnl": 0.0,
+        "pnl_r": 1.85,
+        "is_option": false
+    },
+    "reviews": [],
+    "orders": [
+        {
+            "id": "c47a887e67f4439a",
+            "ts": "2026-09-21T07:23:14.386972+00:00",
+            "updated_ts": "2026-09-21T07:23:14.391510+00:00",
+            "decision_id": "b17ab1da0b534578",
+            "position_id": "2bcca347669d42ce",
+            "mode": "paper",
+            "broker_order_id": "c47a887e67f4439a",
+            "instrument_key": "ORCL",
+            "instrument": {
+                "symbol": "ORCL",
+                "right": null,
+                "strike": null,
+                "expiry": null
+            },
+            "side": "buy",
+            "qty": 53,
+            "limit_price": 469.87,
+            "reason": "entry",
+            "status": "filled",
+            "filled_qty": 53,
+            "avg_fill_price": 469.6439,
+            "message": "",
+            "raw": {
+                "fee": 0.0,
+                "quote": {
+                    "instrument": {
+                        "symbol": "ORCL",
+                        "right": null,
+                        "strike": null,
+                        "expiry": null
+                    },
+                    "bid": 469.37,
+                    "ask": 469.55,
+                    "last": 469.46,
+                    "ts": "2026-09-21T07:23:14.389134Z"
+                }
+            }
+        },
+        {
+            "id": "9a24b3e96dfb4018",
+            "ts": "2026-09-21T07:23:34.232642+00:00",
+            "updated_ts": "2026-09-21T07:23:34.240589+00:00",
+            "decision_id": "b17ab1da0b534578",
+            "position_id": "2bcca347669d42ce",
+            "mode": "paper",
+            "broker_order_id": "9a24b3e96dfb4018",
+            "instrument_key": "ORCL",
+            "instrument": {
+                "symbol": "ORCL",
+                "right": null,
+                "strike": null,
+                "expiry": null
+            },
+            "side": "sell",
+            "qty": 53,
+            "limit_price": 473.54,
+            "reason": "take_profit",
+            "status": "filled",
+            "filled_qty": 53,
+            "avg_fill_price": 474.2951,
+            "message": "",
+            "raw": {
+                "fee": 0.0,
+                "quote": {
+                    "instrument": {
+                        "symbol": "ORCL",
+                        "right": null,
+                        "strike": null,
+                        "expiry": null
+                    },
+                    "bid": 474.39,
+                    "ask": 474.58,
+                    "last": 474.49,
+                    "ts": "2026-09-21T07:23:34.235852Z"
+                }
+            }
+        }
+    ],
+    "events": [
+        {
+            "id": 11,
+            "ts": "2026-09-21T07:23:14.395006+00:00",
+            "level": "info",
+            "kind": "position.opened",
+            "message": "OPENED 53 ORCL @ 469.64 | stop 467.36 target 473.75 | risk $133",
+            "data": {
+                "position_id": "2bcca347669d42ce"
+            },
+            "decision_id": "b17ab1da0b534578",
+            "position_id": "2bcca347669d42ce"
+        },
+        {
+            "id": 16,
+            "ts": "2026-09-21T07:23:34.229634+00:00",
+            "level": "info",
+            "kind": "exit.triggered",
+            "message": "EXIT ORCL: take_profit (bid 474.16 >= target 473.75 (+1.0%))",
+            "data": {
+                "reason": "take_profit",
+                "detail": "bid 474.16 >= target 473.75 (+1.0%)"
+            },
+            "decision_id": "b17ab1da0b534578",
+            "position_id": "2bcca347669d42ce"
+        },
+        {
+            "id": 17,
+            "ts": "2026-09-21T07:23:34.247582+00:00",
+            "level": "info",
+            "kind": "position.closed",
+            "message": "CLOSED ORCL @ 474.30 | take_profit | P&L $+246.51 (+1.85R)",
+            "data": {
+                "pnl": 246.51,
+                "r": 1.85,
+                "reason": "take_profit"
+            },
+            "decision_id": "b17ab1da0b534578",
+            "position_id": "2bcca347669d42ce"
+        },
+        {
+            "id": 18,
+            "ts": "2026-09-21T07:23:34.255799+00:00",
+            "level": "info",
+            "kind": "lesson.written",
+            "message": "lesson from ORCL (+1.85R): [offline heuristic] no lesson: reviewer needs a real model",
+            "data": {},
+            "decision_id": null,
+            "position_id": "2bcca347669d42ce"
+        }
+    ],
+    "lesson": {
+        "id": 1,
+        "ts": "2026-09-21T07:23:34.254634+00:00",
+        "position_id": "2bcca347669d42ce",
+        "symbol": "ORCL",
+        "vehicle": "shares",
+        "outcome_r": 1.85,
+        "tags": [
+            "offline"
+        ],
+        "situation": "ORCL shares",
+        "what_happened": "closed take_profit at +1.85R",
+        "lesson": "[offline heuristic] no lesson: reviewer needs a real model",
+        "model": "offline-heuristic",
+        "cost_usd": 0.0
+    },
+    "llm_calls": [
+        {
+            "id": 28,
+            "ts": "2026-09-21T07:23:34.252974+00:00",
+            "agent": "reviewer",
+            "model": "offline-heuristic",
+            "decision_id": null,
+            "position_id": "2bcca347669d42ce",
+            "latency_ms": 0,
+            "tokens_in": 0,
+            "tokens_out": 0,
+            "cost_usd": 0.0,
+            "error": ""
+        }
+    ],
+    "decision": {
+        "decision": {
+            "id": "b17ab1da0b534578",
+            "ts": "2026-09-21T07:23:14.245093+00:00",
+            "cycle_id": "b1e9c91eb5b14b9c",
+            "mode": "paper",
+            "symbol": "ORCL",
+            "status": "executed",
+            "candidate": {
+                "symbol": "ORCL",
+                "quote": {
+                    "instrument": {
+                        "symbol": "ORCL",
+                        "right": null,
+                        "strike": null,
+                        "expiry": null
+                    },
+                    "bid": 469.39,
+                    "ask": 469.58,
+                    "last": 469.49,
+                    "ts": "2026-09-21T07:23:14.229251Z"
+                },
+                "signals": {
+                    "price": 469.5138,
+                    "rsi14": 85.9422,
+                    "roc6_pct": 1.5202,
+                    "roc12_pct": 1.6066,
+                    "ema_trend_pct": 0.6146,
+                    "vwap_dev_pct": 2.7344,
+                    "zscore20": 2.2837,
+                    "rvol": 1.8397,
+                    "breakout_up_atr": 1.3502,
+                    "breakout_dn_atr": -11.9428,
+                    "atr_pct": 0.2271
+                },
+                "recent": {
+                    "closes": [
+                        456.53,
+                        456.44,
+                        456.78,
+                        458.32,
+                        459.17,
+                        458.82,
+                        459.42,
+                        458.49,
+                        458.89,
+                        460.53,
+                        461.37,
+                        462.09,
+                        462.77,
+                        462.52,
+                        462.91,
+                        461.53,
+                        462.45,
+                        462.48,
+                        464.31,
+                        464.17,
+                        465.63,
+                        466.73,
+                        468.07,
+                        469.51
+                    ],
+                    "rel_volume": [
+                        2.34,
+                        0.17,
+                        1.18,
+                        1.35,
+                        1.1,
+                        3.17
+                    ],
+                    "day_open": 449.08,
+                    "day_high": 469.51,
+                    "day_low": 448.57
+                },
+                "atr": 1.066055726525698,
+                "hint_score": 0.96,
+                "hint_setups": [
+                    "momentum_breakout",
+                    "overbought_reversion"
+                ],
+                "scout_reason": "[offline heuristic] momentum_breakout, overbought_reversion"
+            },
+            "regime": {
+                "label": "offline",
+                "bias": "neutral",
+                "confidence": 0.4,
+                "summary": "[offline heuristic] 53% of universe above VWAP",
+                "what_works": ""
+            },
+            "scout_reason": "[offline heuristic] momentum_breakout, overbought_reversion",
+            "context": {
+                "portfolio": {
+                    "equity": 100000,
+                    "day_pnl_pct": 0.0,
+                    "exposure_pct": 0.0,
+                    "open_positions": [],
+                    "trades_today": 0,
+                    "consecutive_losses": 0,
+                    "recent_closed": []
+                },
+                "track_record": {},
+                "lessons": [],
+                "envelope": {
+                    "shares": {
+                        "max_stop_pct_from_entry": 3.0,
+                        "profit_ceiling_pct": 8.0,
+                        "full_size_risk_usd": 500,
+                        "max_position_usd": 25000,
+                        "max_hold_minutes": 240
+                    },
+                    "options": {
+                        "enabled": true,
+                        "full_size_premium_usd": 1000,
+                        "hard_premium_stop_pct": 35.0,
+                        "profit_ceiling_pct": 100.0,
+                        "max_hold_minutes": 300
+                    },
+                    "position_slots_left": 8,
+                    "note": "Short stock and short options do not exist here. All positions are closed before the bell."
+                },
+                "option_shortlist": [
+                    {
+                        "index": 0,
+                        "type": "call",
+                        "strike": 470.0,
+                        "expiry": "2026-09-28",
+                        "dte": 7,
+                        "bid": 6.55,
+                        "ask": 6.71,
+                        "mid": 6.63,
+                        "spread_pct": 2.41,
+                        "delta": 0.5,
+                        "iv": 0.26,
+                        "open_interest": 1500,
+                        "volume": 400
+                    },
+                    {
+                        "index": 1,
+                        "type": "call",
+                        "strike": 470.0,
+                        "expiry": "2026-10-05",
+                        "dte": 14,
+                        "bid": 9.46,
+                        "ask": 9.69,
+                        "mid": 9.57,
+                        "spread_pct": 2.4,
+                        "delta": 0.51,
+                        "iv": 0.26,
+                        "open_interest": 1500,
+                        "volume": 400
+                    },
+                    {
+                        "index": 2,
+                        "type": "call",
+                        "strike": 480.0,
+                        "expiry": "2026-10-19",
+                        "dte": 28,
+                        "bid": 9.37,
+                        "ask": 9.59,
+                        "mid": 9.48,
+                        "spread_pct": 2.32,
+                        "delta": 0.41,
+                        "iv": 0.26,
+                        "open_interest": 1500,
+                        "volume": 400
+                    },
+                    {
+                        "index": 3,
+                        "type": "put",
+                        "strike": 470.0,
+                        "expiry": "2026-09-28",
+                        "dte": 7,
+                        "bid": 6.68,
+                        "ask": 6.84,
+                        "mid": 6.76,
+                        "spread_pct": 2.37,
+                        "delta": -0.5,
+                        "iv": 0.26,
+                        "open_interest": 1500,
+                        "volume": 400
+                    },
+                    {
+                        "index": 4,
+                        "type": "put",
+                        "strike": 470.0,
+                        "expiry": "2026-10-05",
+                        "dte": 14,
+                        "bid": 9.23,
+                        "ask": 9.46,
+                        "mid": 9.35,
+                        "spread_pct": 2.46,
+                        "delta": -0.49,
+                        "iv": 0.26,
+                        "open_interest": 1500,
+                        "volume": 400
+                    },
+                    {
+                        "index": 5,
+                        "type": "put",
+                        "strike": 460.0,
+                        "expiry": "2026-10-19",
+                        "dte": 28,
+                        "bid": 8.37,
+                        "ask": 8.58,
+                        "mid": 8.47,
+                        "spread_pct": 2.48,
+                        "delta": -0.36,
+                        "iv": 0.26,
+                        "open_interest": 1500,
+                        "volume": 400
+                    }
+                ]
+            },
+            "pm": {
+                "action": "enter",
+                "direction": "long",
+                "vehicle": "shares",
+                "contract_index": null,
+                "stop_price": 467.36,
+                "target_price": 473.75,
+                "size_fraction": 0.5,
+                "max_hold_minutes": 120,
+                "confidence": 0.61,
+                "summary": "[offline heuristic] specialists net +1.06",
+                "key_risks": [
+                    "offline mode: not a real model decision"
+                ],
+                "invalidation": "stop level"
+            },
+            "proposal": {
+                "symbol": "ORCL",
+                "instrument": {
+                    "symbol": "ORCL",
+                    "right": null,
+                    "strike": null,
+                    "expiry": null
+                },
+                "vehicle": "shares",
+                "side": "buy",
+                "qty": 53,
+                "limit_price": 469.87,
+                "stop_price": 467.36,
+                "target_price": 473.75,
+                "und_stop": 0.0,
+                "und_target": 0.0,
+                "risk_usd": 133.03,
+                "notional_usd": 24903.11,
+                "quote_age_seconds": 0.003164,
+                "spread_pct": 0.03833457565754591,
+                "max_hold_minutes": 120,
+                "clamps": [
+                    "size cut from 99 to 53 shares by the position/cash cap"
+                ]
+            },
+            "risk": {
+                "approved": true,
+                "checks": [
+                    {
+                        "rule": "kill_switch",
+                        "passed": true,
+                        "detail": "armed"
+                    },
+                    {
+                        "rule": "trading_window",
+                        "passed": true,
+                        "detail": "inside entry window"
+                    },
+                    {
+                        "rule": "long_only",
+                        "passed": true,
+                        "detail": "opening side=buy; short stock and short options are never opened"
+                    },
+                    {
+                        "rule": "sane_order",
+                        "passed": true,
+                        "detail": "qty=53 limit=469.8700 stop=467.3600 target=473.7500"
+                    },
+                    {
+                        "rule": "risk_per_trade",
+                        "passed": true,
+                        "detail": "risk at stop $133.03 vs cap $500.00"
+                    },
+                    {
+                        "rule": "max_stop_distance",
+                        "passed": true,
+                        "detail": "stop 0.53% from entry vs max 3.0%"
+                    },
+                    {
+                        "rule": "position_notional_cap",
+                        "passed": true,
+                        "detail": "notional $24903.11 vs cap $25000.00"
+                    },
+                    {
+                        "rule": "buying_power",
+                        "passed": true,
+                        "detail": "notional $24903.11 vs cash $100000.00"
+                    },
+                    {
+                        "rule": "total_exposure",
+                        "passed": true,
+                        "detail": "exposure $24903.11 vs cap $100000.00"
+                    },
+                    {
+                        "rule": "max_open_positions",
+                        "passed": true,
+                        "detail": "0 open vs max 8"
+                    },
+                    {
+                        "rule": "positions_per_symbol",
+                        "passed": true,
+                        "detail": "0 open in ORCL vs max 1"
+                    },
+                    {
+                        "rule": "daily_loss_limit",
+                        "passed": true,
+                        "detail": "day P&L +0.00% vs limit -2.0%"
+                    },
+                    {
+                        "rule": "drawdown_limit",
+                        "passed": true,
+                        "detail": "drawdown 0.00% vs limit 6.0%"
+                    },
+                    {
+                        "rule": "orders_per_minute",
+                        "passed": true,
+                        "detail": "0 orders in last 60s vs max 12"
+                    },
+                    {
+                        "rule": "trades_per_day",
+                        "passed": true,
+                        "detail": "0 today vs max 40"
+                    },
+                    {
+                        "rule": "quote_fresh",
+                        "passed": true,
+                        "detail": "quote age 0.0s vs max 20s"
+                    },
+                    {
+                        "rule": "spread",
+                        "passed": true,
+                        "detail": "spread 0.038% vs max 0.15%"
+                    },
+                    {
+                        "rule": "llm_budget",
+                        "passed": true,
+                        "detail": "LLM spend $0.00 vs cap $15.00"
+                    }
+                ]
+            },
+            "outcome": "opened 53 ORCL @ 469.64"
+        },
+        "opinions": [
+            {
+                "id": 1,
+                "decision_id": "b17ab1da0b534578",
+                "ts": "2026-09-21T07:23:14.262488+00:00",
+                "agent": "momentum",
+                "model": "offline-heuristic",
+                "stance": "bullish",
+                "confidence": 0.85,
+                "thesis": "[offline heuristic] trend +0.61%, breakout up +1.35 / down -11.94 ATR, rvol 1.8",
+                "evidence": [
+                    "trend +0.61%, breakout up +1.35 / down -11.94 ATR, rvol 1.8"
+                ],
+                "invalidation": "n/a (offline mode)",
+                "latency_ms": 0,
+                "tokens_in": 0,
+                "tokens_out": 0,
+                "cost_usd": 0.0,
+                "error": ""
+            },
+            {
+                "id": 2,
+                "decision_id": "b17ab1da0b534578",
+                "ts": "2026-09-21T07:23:14.262489+00:00",
+                "agent": "mean_reversion",
+                "model": "offline-heuristic",
+                "stance": "bearish",
+                "confidence": 0.64,
+                "thesis": "[offline heuristic] z-score +2.28, RSI 86, VWAP dev +2.73%",
+                "evidence": [
+                    "z-score +2.28, RSI 86, VWAP dev +2.73%"
+                ],
+                "invalidation": "n/a (offline mode)",
+                "latency_ms": 0,
+                "tokens_in": 0,
+                "tokens_out": 0,
+                "cost_usd": 0.0,
+                "error": ""
+            },
+            {
+                "id": 3,
+                "decision_id": "b17ab1da0b534578",
+                "ts": "2026-09-21T07:23:14.262490+00:00",
+                "agent": "volatility",
+                "model": "offline-heuristic",
+                "stance": "bullish",
+                "confidence": 0.85,
+                "thesis": "[offline heuristic] 6 liquid contracts; ATR 0.23% per bar",
+                "evidence": [
+                    "6 liquid contracts; ATR 0.23% per bar"
+                ],
+                "invalidation": "n/a (offline mode)",
+                "latency_ms": 0,
+                "tokens_in": 0,
+                "tokens_out": 0,
+                "cost_usd": 0.0,
+                "error": ""
+            },
+            {
+                "id": 4,
+                "decision_id": "b17ab1da0b534578",
+                "ts": "2026-09-21T07:23:14.262490+00:00",
+                "agent": "skeptic",
+                "model": "offline-heuristic",
+                "stance": "neutral",
+                "confidence": 0.3,
+                "thesis": "[offline heuristic] no objection generated",
+                "evidence": [],
+                "invalidation": "n/a",
+                "latency_ms": 0,
+                "tokens_in": 0,
+                "tokens_out": 0,
+                "cost_usd": 0.0,
+                "error": ""
+            }
+        ],
+        "orders": [
+            {
+                "id": "c47a887e67f4439a",
+                "ts": "2026-09-21T07:23:14.386972+00:00",
+                "updated_ts": "2026-09-21T07:23:14.391510+00:00",
+                "decision_id": "b17ab1da0b534578",
+                "position_id": "2bcca347669d42ce",
+                "mode": "paper",
+                "broker_order_id": "c47a887e67f4439a",
+                "instrument_key": "ORCL",
+                "instrument": {
+                    "symbol": "ORCL",
+                    "right": null,
+                    "strike": null,
+                    "expiry": null
+                },
+                "side": "buy",
+                "qty": 53,
+                "limit_price": 469.87,
+                "reason": "entry",
+                "status": "filled",
+                "filled_qty": 53,
+                "avg_fill_price": 469.6439,
+                "message": "",
+                "raw": {
+                    "fee": 0.0,
+                    "quote": {
+                        "instrument": {
+                            "symbol": "ORCL",
+                            "right": null,
+                            "strike": null,
+                            "expiry": null
+                        },
+                        "bid": 469.37,
+                        "ask": 469.55,
+                        "last": 469.46,
+                        "ts": "2026-09-21T07:23:14.389134Z"
+                    }
+                }
+            },
+            {
+                "id": "9a24b3e96dfb4018",
+                "ts": "2026-09-21T07:23:34.232642+00:00",
+                "updated_ts": "2026-09-21T07:23:34.240589+00:00",
+                "decision_id": "b17ab1da0b534578",
+                "position_id": "2bcca347669d42ce",
+                "mode": "paper",
+                "broker_order_id": "9a24b3e96dfb4018",
+                "instrument_key": "ORCL",
+                "instrument": {
+                    "symbol": "ORCL",
+                    "right": null,
+                    "strike": null,
+                    "expiry": null
+                },
+                "side": "sell",
+                "qty": 53,
+                "limit_price": 473.54,
+                "reason": "take_profit",
+                "status": "filled",
+                "filled_qty": 53,
+                "avg_fill_price": 474.2951,
+                "message": "",
+                "raw": {
+                    "fee": 0.0,
+                    "quote": {
+                        "instrument": {
+                            "symbol": "ORCL",
+                            "right": null,
+                            "strike": null,
+                            "expiry": null
+                        },
+                        "bid": 474.39,
+                        "ask": 474.58,
+                        "last": 474.49,
+                        "ts": "2026-09-21T07:23:34.235852Z"
+                    }
+                }
+            }
+        ],
+        "events": [
+            {
+                "id": 4,
+                "ts": "2026-09-21T07:23:14.264049+00:00",
+                "level": "info",
+                "kind": "decision.enter",
+                "message": "PM wants LONG ORCL via shares conf 0.61 | momentum:bull0.85 mean_reversion:bear0.64 volatility:bull0.85 skeptic:neut0.30 | [offline heuristic] specialists net +1.06",
+                "data": {},
+                "decision_id": "b17ab1da0b534578",
+                "position_id": null
+            },
+            {
+                "id": 9,
+                "ts": "2026-09-21T07:23:14.385350+00:00",
+                "level": "warn",
+                "kind": "plan.clamped",
+                "message": "ORCL: size cut from 99 to 53 shares by the position/cash cap",
+                "data": {},
+                "decision_id": "b17ab1da0b534578",
+                "position_id": null
+            },
+            {
+                "id": 10,
+                "ts": "2026-09-21T07:23:14.388061+00:00",
+                "level": "info",
+                "kind": "order.submitted",
+                "message": "BUY 53 ORCL @ 469.87 limit",
+                "data": {
+                    "order_id": "c47a887e67f4439a",
+                    "proposal": {
+                        "symbol": "ORCL",
+                        "instrument": {
+                            "symbol": "ORCL",
+                            "right": null,
+                            "strike": null,
+                            "expiry": null
+                        },
+                        "vehicle": "shares",
+                        "side": "buy",
+                        "qty": 53,
+                        "limit_price": 469.87,
+                        "stop_price": 467.36,
+                        "target_price": 473.75,
+                        "und_stop": 0.0,
+                        "und_target": 0.0,
+                        "risk_usd": 133.03,
+                        "notional_usd": 24903.11,
+                        "quote_age_seconds": 0.003164,
+                        "spread_pct": 0.03833457565754591,
+                        "max_hold_minutes": 120,
+                        "clamps": [
+                            "size cut from 99 to 53 shares by the position/cash cap"
+                        ]
+                    }
+                },
+                "decision_id": "b17ab1da0b534578",
+                "position_id": null
+            },
+            {
+                "id": 11,
+                "ts": "2026-09-21T07:23:14.395006+00:00",
+                "level": "info",
+                "kind": "position.opened",
+                "message": "OPENED 53 ORCL @ 469.64 | stop 467.36 target 473.75 | risk $133",
+                "data": {
+                    "position_id": "2bcca347669d42ce"
+                },
+                "decision_id": "b17ab1da0b534578",
+                "position_id": "2bcca347669d42ce"
+            },
+            {
+                "id": 16,
+                "ts": "2026-09-21T07:23:34.229634+00:00",
+                "level": "info",
+                "kind": "exit.triggered",
+                "message": "EXIT ORCL: take_profit (bid 474.16 >= target 473.75 (+1.0%))",
+                "data": {
+                    "reason": "take_profit",
+                    "detail": "bid 474.16 >= target 473.75 (+1.0%)"
+                },
+                "decision_id": "b17ab1da0b534578",
+                "position_id": "2bcca347669d42ce"
+            },
+            {
+                "id": 17,
+                "ts": "2026-09-21T07:23:34.247582+00:00",
+                "level": "info",
+                "kind": "position.closed",
+                "message": "CLOSED ORCL @ 474.30 | take_profit | P&L $+246.51 (+1.85R)",
+                "data": {
+                    "pnl": 246.51,
+                    "r": 1.85,
+                    "reason": "take_profit"
+                },
+                "decision_id": "b17ab1da0b534578",
+                "position_id": "2bcca347669d42ce"
+            }
+        ],
+        "position_id": "2bcca347669d42ce",
+        "llm_calls": [
+            {
+                "id": 4,
+                "ts": "2026-09-21T07:23:14.248769+00:00",
+                "agent": "momentum",
+                "model": "offline-heuristic",
+                "decision_id": "b17ab1da0b534578",
+                "position_id": null,
+                "latency_ms": 0,
+                "tokens_in": 0,
+                "tokens_out": 0,
+                "cost_usd": 0.0,
+                "error": ""
+            },
+            {
+                "id": 5,
+                "ts": "2026-09-21T07:23:14.249533+00:00",
+                "agent": "volatility",
+                "model": "offline-heuristic",
+                "decision_id": "b17ab1da0b534578",
+                "position_id": null,
+                "latency_ms": 0,
+                "tokens_in": 0,
+                "tokens_out": 0,
+                "cost_usd": 0.0,
+                "error": ""
+            },
+            {
+                "id": 7,
+                "ts": "2026-09-21T07:23:14.249482+00:00",
+                "agent": "mean_reversion",
+                "model": "offline-heuristic",
+                "decision_id": "b17ab1da0b534578",
+                "position_id": null,
+                "latency_ms": 0,
+                "tokens_in": 0,
+                "tokens_out": 0,
+                "cost_usd": 0.0,
+                "error": ""
+            },
+            {
+                "id": 8,
+                "ts": "2026-09-21T07:23:14.259385+00:00",
+                "agent": "skeptic",
+                "model": "offline-heuristic",
+                "decision_id": "b17ab1da0b534578",
+                "position_id": null,
+                "latency_ms": 0,
+                "tokens_in": 0,
+                "tokens_out": 0,
+                "cost_usd": 0.0,
+                "error": ""
+            },
+            {
+                "id": 9,
+                "ts": "2026-09-21T07:23:14.260698+00:00",
+                "agent": "portfolio_manager",
+                "model": "offline-heuristic",
+                "decision_id": "b17ab1da0b534578",
+                "position_id": null,
+                "latency_ms": 0,
+                "tokens_in": 0,
+                "tokens_out": 0,
+                "cost_usd": 0.0,
+                "error": ""
+            }
+        ]
+    }
+}

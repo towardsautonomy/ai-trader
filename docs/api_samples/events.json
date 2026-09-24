@@ -1,0 +1,91 @@
+[
+    {
+        "id": 12,
+        "ts": "2026-09-21T06:59:11.152425+00:00",
+        "level": "info",
+        "kind": "position.opened",
+        "message": "OPENED 21 ORCL @ 469.64 | stop 467.36 target 473.75 | risk $53",
+        "data": {
+            "position_id": "70eafd706e014c92"
+        },
+        "decision_id": "97bb592aeb544670",
+        "position_id": "70eafd706e014c92"
+    },
+    {
+        "id": 13,
+        "ts": "2026-09-21T06:59:11.160177+00:00",
+        "level": "warn",
+        "kind": "decision.unbuildable",
+        "message": "PLTR: plan discarded: premium budget $500 does not cover one contract at 9.83",
+        "data": {},
+        "decision_id": "70550a2fb6324441",
+        "position_id": null
+    },
+    {
+        "id": 14,
+        "ts": "2026-09-21T06:59:11.164746+00:00",
+        "level": "warn",
+        "kind": "decision.unbuildable",
+        "message": "MSFT: plan discarded: premium budget $500 does not cover one contract at 9.49",
+        "data": {},
+        "decision_id": "902d6556e1934c82",
+        "position_id": null
+    },
+    {
+        "id": 15,
+        "ts": "2026-09-21T06:59:11.169185+00:00",
+        "level": "warn",
+        "kind": "decision.unbuildable",
+        "message": "MU: plan discarded: premium budget $500 does not cover one contract at 9.31",
+        "data": {},
+        "decision_id": "c7064ec1d2e741ac",
+        "position_id": null
+    },
+    {
+        "id": 16,
+        "ts": "2026-09-21T06:59:11.173825+00:00",
+        "level": "warn",
+        "kind": "decision.unbuildable",
+        "message": "SMCI: plan discarded: premium budget $500 does not cover one contract at 8.92",
+        "data": {},
+        "decision_id": "8a743a6a93334a3c",
+        "position_id": null
+    },
+    {
+        "id": 17,
+        "ts": "2026-09-21T06:59:35.998487+00:00",
+        "level": "info",
+        "kind": "exit.triggered",
+        "message": "EXIT ORCL: take_profit (bid 474.14 >= target 473.75 (+1.0%))",
+        "data": {
+            "reason": "take_profit",
+            "detail": "bid 474.14 >= target 473.75 (+1.0%)"
+        },
+        "decision_id": "97bb592aeb544670",
+        "position_id": "70eafd706e014c92"
+    },
+    {
+        "id": 18,
+        "ts": "2026-09-21T06:59:36.018568+00:00",
+        "level": "info",
+        "kind": "position.closed",
+        "message": "CLOSED ORCL @ 473.80 | take_profit | P&L $+87.18 (+1.65R)",
+        "data": {
+            "pnl": 87.18,
+            "r": 1.65,
+            "reason": "take_profit"
+        },
+        "decision_id": "97bb592aeb544670",
+        "position_id": "70eafd706e014c92"
+    },
+    {
+        "id": 19,
+        "ts": "2026-09-21T06:59:36.029729+00:00",
+        "level": "info",
+        "kind": "lesson.written",
+        "message": "lesson from ORCL (+1.65R): [offline heuristic] no lesson: reviewer needs a real model",
+        "data": {},
+        "decision_id": null,
+        "position_id": "70eafd706e014c92"
+    }
+]

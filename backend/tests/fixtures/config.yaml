@@ -1,0 +1,108 @@
+# FROZEN copy for tests. Do not tune; tests assert against these exact numbers.
+# AI Trader — all non-secret tunables live here. Secrets and mode go in .env.
+# The risk section is enforced in code by app/risk/engine.py; agents cannot override it.
+
+universe:
+  # Features are computed for every symbol each cycle; the scout agent picks from them. Keep it liquid: tight
+  # spreads matter more than breadth for short holding periods.
+  symbols: [SPY, QQQ, IWM, AAPL, MSFT, NVDA, AMD, TSLA, META, AMZN, GOOGL, NFLX,
+            AVGO, JPM, BAC, XOM, CVX, UNH, LLY, COST, WMT, DIS, BA, CRM, ORCL,
+            INTC, MU, PLTR, COIN, UBER, SHOP, SMCI, ARM, SOFI, F, GM, T, PFE]
+  regime_symbols: [SPY, QQQ]      # fed to the regime agent once per cycle
+  min_price: 5.0
+  max_spread_pct: 0.15            # skip symbols whose bid/ask spread exceeds this % of mid
+
+engine:
+  cycle_seconds: 120              # scan -> swarm -> risk -> execute cadence
+  exit_poll_seconds: 5            # enforces the stop/target levels the agents set; no LLM in this path
+  watchdog_seconds: 10
+  max_candidates_per_cycle: 5     # how many symbols the scout may send to the swarm
+  scout_table_rows: 40            # universe rows shown to the scout agent
+  position_review_seconds: 120    # how often the position-manager agent reviews open trades
+  bar_interval: 5m
+  bar_lookback: 78                # bars per symbol handed to the scanner
+
+session:
+  # Agents are active only inside the regular NYSE session (holidays and
+  # half-days come from the exchange calendar).
+  no_entry_first_minutes: 5
+  no_entry_last_minutes: 20
+  flatten_before_close_minutes: 10   # everything is closed this long before the bell
+  hold_overnight: false
+
+risk:
+  max_risk_per_trade_pct: 0.5     # % of equity lost if the stop is hit (options: premium paid)
+  max_position_notional_pct: 10   # % of equity in any single equity position (tight intraday stops need size to reach the risk budget)
+  max_option_premium_pct: 1.0     # % of equity in any single option position
+  max_total_exposure_pct: 60     # sum of open notional / equity; 100 = never more than the account (no margin)
+  max_open_positions: 8
+  max_positions_per_symbol: 1
+  max_daily_loss_pct: 2.0         # trips kill switch (HALT)
+  max_drawdown_pct: 6.0           # from equity high-water mark; trips kill switch (FLATTEN)
+  max_orders_per_minute: 12
+  max_trades_per_day: 40
+  max_day_trades_5d: 0            # 0 = unlimited; set 3 for a margin account under the PDT threshold
+  max_quote_age_seconds: 20
+  max_llm_spend_per_day_usd: 15.0 # new entries stop when exceeded
+
+equity_exits:
+  # Hard backstops only. The portfolio manager sets each trade's stop and target;
+  # the position-manager agent moves them as the trade develops. Code enforces
+  # whatever levels are set, on the fast loop, and these outer bounds.
+  max_stop_pct: 3.0               # a stop may never sit further than this from entry
+  take_profit_ceiling_pct: 8.0    # always sell at this gain even if the agents want more
+  max_hold_minutes: 240
+
+options:
+  enabled: true
+  # Defined-risk only: long calls and long puts. Max loss is the premium, and
+  # the premium is capped by risk.max_option_premium_pct. Any order that would
+  # open a short option is rejected by the risk engine regardless of source.
+  allowed_strategies: [long_call, long_put]
+  min_dte: 5
+  max_dte: 35
+  target_delta: 0.50
+  delta_tolerance: 0.20
+  max_spread_pct: 8.0             # of option mid
+  min_open_interest: 200
+  min_volume: 50
+  shortlist_size: 6               # liquid contracts offered to the portfolio manager to choose from
+  stop_loss_pct: 35               # hard: close when premium is down this much
+  take_profit_ceiling_pct: 100    # hard: always sell at this premium gain
+  exit_at_dte: 2
+  max_hold_minutes: 300
+
+execution:
+  entry_limit_offset_bps: 5       # marketable limit: this far through the touch
+  option_entry_offset_pct: 1.5    # options: limit this far above the ask (sizing assumes the full limit is paid)
+  entry_timeout_seconds: 20       # unfilled entries are cancelled, never chased
+  exit_limit_offset_bps: 15       # shares: first exit attempt this far through the bid, widening each reprice
+  option_exit_offset_pct: 1.5     # options: same idea, in percent of premium
+  exit_timeout_seconds: 8         # then repriced, more aggressively each attempt
+  exit_max_reprices: 4
+
+paper:
+  starting_cash: 100000
+  slippage_bps: 2
+  option_slippage_pct: 1.0
+  commission_per_contract: 0.03
+
+agents:
+  # Decisions are made by agents, guided by worked examples in app/agents/prompts/.
+  # Code only enforces the risk envelope above.
+  #   scout             picks which symbols deserve deliberation this cycle
+  #   regime            reads the market backdrop once per cycle
+  #   momentum / mean_reversion / volatility   specialists, run in parallel per candidate
+  #   skeptic           argues against the emerging view
+  #   portfolio_manager decides: enter/skip, vehicle, contract, stop, target, size
+  #   position_manager  reviews open trades: hold / tighten / extend / exit
+  #   reviewer          post-trade; writes lessons that become future examples
+  default_model: anthropic/claude-haiku-4.5
+  models:
+    portfolio_manager: anthropic/claude-sonnet-5
+    position_manager: anthropic/claude-sonnet-5
+    reviewer: anthropic/claude-sonnet-5
+  timeout_seconds: 40
+  specialists: [momentum, mean_reversion, volatility]
+  lessons_in_prompt: 6            # most relevant past lessons shown to the portfolio manager
+  show_agent_track_record: true   # agents' realised hit rates are shown to the portfolio manager

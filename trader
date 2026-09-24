@@ -1,0 +1,263 @@
+#!/usr/bin/env bash
+# AI Trader control script. Run from anywhere:  /floppy/workspace/ai_trader/trader <command>
+#
+#   trader start [--demo] [--dev] [--local] [--rebuild]   backend + frontend, detached, with logs
+#   trader stop                                            stop both
+#   trader restart [same flags as start]
+#   trader status                                          processes, URLs, engine state
+#   trader logs [backend|frontend] [-f]                    tail the logs
+#   trader kill [--flatten]                                KILL SWITCH (works even if the server is wedged)
+#   trader rearm                                           re-enable trading (asks for REARM)
+#   trader test                                            full regression suite + frontend lint/typecheck
+#   trader doctor                                          configuration check
+#   trader llm models                                      models the local server (Ollama) offers
+#   trader llm pull <name>                                 download a model into Ollama
+#   trader llm test [local/<name>|<openrouter model>] [SYM] one real deliberation, every agent's answer, timings
+#   trader robinhood login|discover|verify                 broker setup
+#   trader live-code                                       one-time code the dashboard asks for when switching to LIVE
+#
+# start flags:
+#   --demo           synthetic market + ignore the clock: trades within seconds, any time of day, no keys needed
+#   --data <source>  market data: robinhood | yfinance | auto (default: robinhood once `robinhood verify` passed)
+#   --llm <model>    every agent uses this model, e.g. --llm local/qwen2.5:14b (Ollama) or --llm anthropic/claude-sonnet-5
+#   --dev            frontend with hot reload (next dev) instead of the production build
+#   --local          bind to 127.0.0.1 only (default binds 0.0.0.0 so a remote browser can watch)
+#   --rebuild        force a fresh frontend production build
+#   --fresh          (demo only) wipe the demo data dir first, so results are only from this run
+#
+# Local models: with Ollama running, `local/<name>` models need nothing else; AIT_LOCAL_LLM_URL is
+# set to http://127.0.0.1:11434/v1 automatically when unset and Ollama answers there.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BACKEND="$ROOT/backend"; FRONTEND="$ROOT/frontend"; RUN="$ROOT/.run"; LOGS="$RUN/logs"
+BACKEND_PORT="${AIT_PORT:-8400}"; FRONTEND_PORT="${AIT_UI_PORT:-3400}"
+mkdir -p "$LOGS"
+
+red()   { printf '\033[1;31m%s\033[0m\n' "$*"; }
+green() { printf '\033[1;32m%s\033[0m\n' "$*"; }
+amber() { printf '\033[1;33m%s\033[0m\n' "$*"; }
+
+need() { command -v "$1" >/dev/null 2>&1 || { red "missing: $1"; exit 1; }; }
+
+lan_ip() { hostname -I 2>/dev/null | awk '{print $1}'; }
+
+pid_alive() { [ -f "$RUN/$1.pid" ] && kill -0 "$(cat "$RUN/$1.pid")" 2>/dev/null; }
+
+port_busy() { ss -ltn 2>/dev/null | awk '{print $4}' | grep -qE "[:.]$1\$"; }
+
+api_token() {
+    # One token per install, generated once. Guards kill/re-arm/close against callers that
+    # never loaded the page. It is embedded in the frontend bundle, so it is not a secret
+    # from anyone who can open the terminal: keep the ports on a trusted network or an SSH tunnel.
+    if [ ! -s "$RUN/api_token" ]; then
+        python3 -c 'import secrets; print(secrets.token_urlsafe(24))' > "$RUN/api_token"
+        chmod 600 "$RUN/api_token"
+    fi
+    cat "$RUN/api_token"
+}
+
+launch() {  # launch <name> <dir> <ENV=VAL...> -- <command...>
+    local name="$1" dir="$2"; shift 2
+    local -a e=(); while [ "$1" != "--" ]; do e+=("$1"); shift; done; shift
+    ( cd "$dir" && exec env "${e[@]}" setsid "$@" ) > "$LOGS/$name.log" 2>&1 < /dev/null &
+    echo $! > "$RUN/$name.pid"
+}
+
+# ---------------------------------------------------------------- start
+OLLAMA_URL="http://127.0.0.1:11434/v1"
+
+local_llm_env() {
+    # Print AIT_LOCAL_LLM_URL=... when a local server is configured or Ollama is up; nothing otherwise.
+    if [ -n "${AIT_LOCAL_LLM_URL:-}" ]; then echo "AIT_LOCAL_LLM_URL=$AIT_LOCAL_LLM_URL"
+    elif grep -qs '^AIT_LOCAL_LLM_URL=.\+' "$BACKEND/.env"; then :
+    elif curl -sf -m 2 "$OLLAMA_URL/models" >/dev/null 2>&1; then echo "AIT_LOCAL_LLM_URL=$OLLAMA_URL"; fi
+}
+
+cmd_start() {
+    local demo=0 dev=0 local_only=0 rebuild=0 fresh=0 model="" data=""
+    while [ $# -gt 0 ]; do case "$1" in
+        --demo) demo=1;; --dev) dev=1;; --local) local_only=1;; --rebuild) rebuild=1;; --fresh) fresh=1;;
+        --data) shift; data="${1:-}"; case "$data" in robinhood|yfinance|auto) ;; *) red "--data must be robinhood, yfinance or auto"; exit 1;; esac;;
+        --llm) shift; model="${1:-}"; [ -n "$model" ] || { red "--llm needs a model name"; exit 1; };;
+        *) red "unknown flag $1"; exit 1;;
+    esac; shift; done
+    if [ -n "$data" ] && [ "$demo" = 1 ]; then red "--data does not apply to --demo (the demo always uses the synthetic market)"; exit 1; fi
+    need uv; need node; need npm
+
+    if pid_alive backend || pid_alive frontend; then amber "already running (use: trader restart)"; cmd_status; return; fi
+    for p in "$BACKEND_PORT" "$FRONTEND_PORT"; do
+        port_busy "$p" && { red "port $p is in use by something else"; exit 1; }
+    done
+
+    local host ui_host url_host token
+    if [ "$local_only" = 1 ]; then host=127.0.0.1; ui_host=127.0.0.1; url_host=127.0.0.1
+    else host=0.0.0.0; ui_host=0.0.0.0; url_host="$(lan_ip)"; [ -n "$url_host" ] || url_host=127.0.0.1; fi
+    token="$(api_token)"
+
+    # ---- backend
+    local -a benv=(AIT_HOST="$host" AIT_PORT="$BACKEND_PORT" AIT_API_TOKEN="$token"
+                   AIT_CORS_ORIGINS="*:$FRONTEND_PORT")   # any address this box has (LAN, VPN, hostname), on the UI port
+    if [ "$demo" = 1 ]; then
+        benv+=(AIT_DATA_SOURCE=synthetic AIT_IGNORE_CLOCK=true AIT_DATA_DIR="$BACKEND/data/demo")
+        [ "$fresh" = 1 ] && rm -rf "$BACKEND/data/demo" && echo "demo data wiped"
+    elif [ "$fresh" = 1 ]; then red "--fresh only applies to --demo (real paper history is never wiped by this script)"; exit 1; fi
+    [ -n "$data" ] && benv+=(AIT_DATA_SOURCE="$data")
+    local lenv; lenv="$(local_llm_env)"; [ -n "$lenv" ] && benv+=("$lenv")
+    if [ -n "$model" ]; then
+        benv+=(AIT_MODEL="$model")
+        case "$model" in local/*) [ -n "$lenv" ] || grep -qs '^AIT_LOCAL_LLM_URL=.\+' "$BACKEND/.env" \
+            || { red "--llm $model needs a local server: start Ollama, or set AIT_LOCAL_LLM_URL"; exit 1; };; esac
+    fi
+    printf '%s\n' "${benv[@]}" > "$RUN/backend.env"     # so kill/rearm hit the same data dir and port
+    launch backend "$BACKEND" "${benv[@]}" -- ./ait run
+    for _ in $(seq 1 30); do curl -sf -m 2 "http://127.0.0.1:$BACKEND_PORT/api/status" >/dev/null 2>&1 && break; sleep 1; done
+    if ! curl -sf -m 2 "http://127.0.0.1:$BACKEND_PORT/api/status" >/dev/null 2>&1; then
+        red "backend did not come up; last log lines:"; tail -20 "$LOGS/backend.log"; rm -f "$RUN/backend.pid"; exit 1
+    fi
+
+    # ---- frontend (the build has no host baked in: the browser uses the host it loaded the page from)
+    local -a fenv=(NEXT_PUBLIC_API_PORT="$BACKEND_PORT" NEXT_PUBLIC_API_TOKEN="$token" NEXT_PUBLIC_API_URL=)
+    if [ ! -d "$FRONTEND/node_modules" ]; then
+        echo "installing frontend dependencies..."
+        ( cd "$FRONTEND" && npm install --no-audit --no-fund >> "$LOGS/frontend.log" 2>&1 ) || { red "npm install failed; see $LOGS/frontend.log"; cmd_stop; exit 1; }
+    fi
+    if [ "$dev" = 1 ]; then
+        launch frontend "$FRONTEND" "${fenv[@]}" -- npx next dev -H "$ui_host" -p "$FRONTEND_PORT"
+    else
+        # rebuild when asked, when there is no build, when sources changed, or when the token/port changed
+        local stamp="$RUN/frontend.build" want="$token:$BACKEND_PORT"
+        if [ "$rebuild" = 1 ] || [ ! -f "$FRONTEND/.next/BUILD_ID" ] || [ "$(cat "$stamp" 2>/dev/null)" != "$want" ] \
+           || [ -n "$(find "$FRONTEND/src" "$FRONTEND/package.json" -newer "$FRONTEND/.next/BUILD_ID" -print -quit 2>/dev/null)" ]; then
+            echo "building frontend (about a minute)..."
+            ( cd "$FRONTEND" && env "${fenv[@]}" npm run build >> "$LOGS/frontend.log" 2>&1 < /dev/null ) || { red "frontend build failed; see $LOGS/frontend.log"; cmd_stop; exit 1; }
+            echo "$want" > "$stamp"
+        fi
+        launch frontend "$FRONTEND" "${fenv[@]}" -- npx next start -H "$ui_host" -p "$FRONTEND_PORT"
+    fi
+    for _ in $(seq 1 60); do curl -sf -m 2 -o /dev/null "http://127.0.0.1:$FRONTEND_PORT/" && break; sleep 1; done
+
+    echo
+    green "AI Trader is running"
+    echo "  terminal   http://$url_host:$FRONTEND_PORT      (open this from any machine on the network)"
+    local others; others="$(hostname -I 2>/dev/null | tr ' ' '\n' | grep -E '^[0-9.]+$' | grep -v "^$url_host\$" | grep -v '^172\.17\.' | paste -sd' ' -)"
+    [ -n "$others" ] && [ "$local_only" = 0 ] && echo "  also on    $(for h in $others; do printf 'http://%s:%s ' "$h" "$FRONTEND_PORT"; done)"
+    echo "  api        http://$url_host:$BACKEND_PORT/api/status"
+    [ "$local_only" = 1 ] && echo "  (bound to localhost only; from another machine use: ssh -L $FRONTEND_PORT:localhost:$FRONTEND_PORT -L $BACKEND_PORT:localhost:$BACKEND_PORT $(whoami)@$(hostname))"
+    [ "$demo" = 1 ] && amber "  DEMO: synthetic market, clock ignored, separate data dir (backend/data/demo)"
+    [ -n "$model" ] && echo "  models     every agent: $model"
+    echo "  logs       trader logs -f        stop: trader stop        KILL: trader kill --flatten"
+    echo
+    cmd_status
+}
+
+# ---------------------------------------------------------------- stop
+cmd_stop() {
+    local any=0
+    for name in frontend backend; do
+        if [ -f "$RUN/$name.pid" ]; then
+            local pid; pid="$(cat "$RUN/$name.pid")"
+            if kill -0 "$pid" 2>/dev/null; then
+                kill -- -"$pid" 2>/dev/null || kill "$pid" 2>/dev/null || true   # setsid: signal the whole group
+                for _ in $(seq 1 20); do kill -0 "$pid" 2>/dev/null || break; sleep 0.5; done
+                kill -0 "$pid" 2>/dev/null && kill -9 -- -"$pid" 2>/dev/null || true
+                echo "stopped $name"; any=1
+            fi
+            rm -f "$RUN/$name.pid"
+        fi
+    done
+    for p in "$BACKEND_PORT" "$FRONTEND_PORT"; do   # belt and braces: nothing of ours may survive on our ports
+        port_busy "$p" && fuser -k "$p/tcp" >/dev/null 2>&1 && amber "swept a leftover listener on port $p" && any=1
+    done
+    [ "$any" = 1 ] || echo "nothing was running"
+    # the engine flattens nothing on shutdown: open paper/live positions stay open and are managed again at next start
+}
+
+# ---------------------------------------------------------------- status
+read -r -d '' STATUS_PY <<'PY' || true
+import json, sys
+d = json.load(sys.stdin); a = d.get("account") or {}; k = d["kill"]; s = d["session"]
+wedged = [n for n, v in (d.get("engine") or {}).items() if v.get("overdue")]
+print(f"  mode {d['mode'].upper():6} kill {k['state'].upper():8} session {s['phase']:15} "
+      f"data {d['data_source']} / broker {d['broker']} / llm {d['llm']}")
+if a:
+    print(f"  equity {a['equity']:,.2f}  day P&L {a['day_pnl']:+,.2f} ({a['day_pnl_pct']:+.2f}%)  "
+          f"open {a['open_positions']}  trades today {a['trades_today']}  LLM spend ${a['llm_spend_today']:.2f}")
+if d.get("account_error"): print("  ACCOUNT ERROR:", d["account_error"])
+if k["state"] != "armed": print(f"  KILL SWITCH {k['state'].upper()} by {k['source']}: {k['reason']}")
+if wedged: print("  ENGINE LOOPS OVERDUE:", ", ".join(wedged))
+PY
+
+cmd_status() {
+    local ip; ip="$(lan_ip)"; [ -n "$ip" ] || ip=127.0.0.1
+    for name in backend frontend; do
+        if pid_alive "$name"; then green "  $name: running (pid $(cat "$RUN/$name.pid"))"; else red "  $name: not running"; fi
+    done
+    if pid_alive backend; then
+        curl -sf -m 3 "http://127.0.0.1:$BACKEND_PORT/api/status" | python3 -c "$STATUS_PY" \
+            || red "  backend process is up but the API is not answering"
+        echo "  terminal   http://$ip:$FRONTEND_PORT"
+    fi
+}
+
+# ---------------------------------------------------------------- the rest
+cmd_logs() {
+    local which="both" follow=""
+    for a in "$@"; do case "$a" in backend|frontend) which=$a;; -f) follow=-f;; esac; done
+    case "$which" in
+        backend)  tail -n 60 $follow "$LOGS/backend.log";;
+        frontend) tail -n 60 $follow "$LOGS/frontend.log";;
+        *)        tail -n 40 $follow "$LOGS/backend.log" "$LOGS/frontend.log";;
+    esac
+}
+
+cmd_test() {
+    ( cd "$BACKEND" && ./check.sh ) || exit 1
+    ( cd "$FRONTEND" && [ -d node_modules ] && npm run lint && npx tsc --noEmit ) || exit 1
+    green "all checks passed"
+}
+
+backend_env_cli() {  # backend CLI with the local-LLM URL discovered, for commands that need models
+    local lenv; lenv="$(local_llm_env)"
+    ( cd "$BACKEND" && env ${lenv:+"$lenv"} ./ait "$@" )
+}
+
+cmd_llm() {
+    local sub="${1:-}"; shift || true
+    case "$sub" in
+        models) backend_env_cli llm models;;
+        pull)   need ollama; ollama pull "$@";;
+        test)
+            local model="" sym="NVDA"
+            for a in "$@"; do case "$a" in */*) model="$a";; *) sym="$a";; esac; done
+            [ -n "$model" ] && set -- --model "$model" --symbol "$sym" || set -- --symbol "$sym"
+            backend_env_cli llm test "$@";;
+        *) red "usage: trader llm models | pull <name> | test [model] [SYMBOL]"; exit 1;;
+    esac
+}
+
+backend_cli() {
+    # Same environment the running backend was started with (data dir, port, token), so the
+    # kill marker file lands where the watchdog looks, even if the API is not answering.
+    local -a e=(AIT_PORT="$BACKEND_PORT" AIT_API_TOKEN="$(api_token)")
+    [ -f "$RUN/backend.env" ] && mapfile -t e < "$RUN/backend.env"
+    ( cd "$BACKEND" && env "${e[@]}" AIT_HOST=127.0.0.1 ./ait "$@" )
+}
+
+cmd="${1:-help}"; shift || true
+case "$cmd" in
+    start)    cmd_start "$@";;
+    stop)     cmd_stop;;
+    restart)  cmd_stop; cmd_start "$@";;
+    status)   cmd_status;;
+    logs)     cmd_logs "$@";;
+    test)     cmd_test;;
+    kill)     backend_cli kill "$@";;
+    rearm)    backend_cli rearm "$@";;
+    doctor)   backend_env_cli doctor;;
+    llm)      cmd_llm "$@";;
+    robinhood) ( cd "$BACKEND" && ./ait robinhood "$@" );;
+    live-code) backend_cli live-code;;
+    help|-h|--help) sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//';;
+    *) red "unknown command: $cmd"; sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'; exit 1;;
+esac
