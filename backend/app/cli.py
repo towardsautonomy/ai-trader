@@ -148,7 +148,19 @@ def llm_test(symbol: str = "NVDA", model: str = typer.Option("", help="use this 
         llm, label = build_llm(s, cfg, db)
         swarm = Swarm(llm, cfg.agents)
         console.print(f"provider [bold]{label}[/bold]; models: " + ", ".join(sorted({cfg.agents.model_for(a) for a in ("scout", "momentum", "portfolio_manager")})))
-        data = SyntheticData([symbol, "SPY", "QQQ"]) if synthetic else YahooData()
+        rh_mcp = None
+        if synthetic:
+            data = SyntheticData([symbol, "SPY", "QQQ"])
+        else:  # the same source the engine would use: Robinhood once verified, else yfinance
+            from app.broker.robinhood_mcp import RobinhoodBroker, RobinhoodMCP
+            from app.runtime import VERIFY_KEY
+            main_db = Database(s.db_url)
+            await main_db.init()
+            verified = await main_db.kv_get(VERIFY_KEY)
+            await main_db.close()
+            rh_mcp = RobinhoodMCP(s.robinhood_mcp_url, s.data_dir)
+            data = RobinhoodBroker(rh_mcp) if rh_mcp.logged_in and verified and s.data_source in ("auto", "robinhood") else YahooData()
+        console.print(f"market data: [bold]{data.name}[/bold]")
         syms = [symbol, "SPY", "QQQ"]
         cfg.universe.max_spread_pct = 5
         bars, quotes = await data.get_bars(syms, "5m", 78), await data.get_quotes(syms)
@@ -161,6 +173,14 @@ def llm_test(symbol: str = "NVDA", model: str = typer.Option("", help="use this 
         picks, note, r = await swarm.scout(table, open_symbols=[], recently_closed=[], regime=regime, max_picks=2, minutes_to_close=180)
         console.print(f"[cyan]scout[/cyan] ({r.latency_ms/1000:.1f}s) picked {[c.symbol for c in picks]}: " + "; ".join(c.scout_reason for c in picks) + (f" [red]ERROR {r.error}[/red]" if r.error else ""))
         cand = next((c for c in picks if c.symbol == symbol), next(c for c in table if c.symbol == symbol))
+        if hasattr(data, "get_catalysts"):
+            try:
+                cand = cand.model_copy(update={"catalysts": await data.get_catalysts(symbol)})
+                cat = cand.catalysts
+                console.print(f"[cyan]catalysts[/cyan] {len(cat.get('headlines', []))} headlines"
+                              + (f"; earnings {cat['earnings']['date']} {cat['earnings']['timing']}" if cat.get("earnings") else "; no earnings within a week"))
+            except Exception as e:
+                console.print(f"[yellow]no catalysts: {e}[/yellow]")
         shortlist = []
         try:
             shortlist = build_shortlist(await data.get_option_chain(symbol, cfg.options.min_dte, cfg.options.max_dte), cfg, max_premium_usd=1000)
@@ -190,6 +210,8 @@ def llm_test(symbol: str = "NVDA", model: str = typer.Option("", help="use this 
                       f"(a live cycle deliberates up to {cfg.engine.max_candidates_per_cycle} candidates, {cfg.engine.parallel_candidates} at a time)")
         if hasattr(llm, "aclose"):
             await llm.aclose()
+        if rh_mcp:
+            await rh_mcp.close()
         await db.close()
         return int(errs or 0)
 
