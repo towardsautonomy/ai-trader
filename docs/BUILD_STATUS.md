@@ -81,7 +81,15 @@ Last verified 2026-09-22: `./check.sh` 279 passing; backend + production fronten
       average 170 s against a 120 s interval; regime/market note are lost on restart.
 - [ ] No news/catalyst/earnings input exists yet. Robinhood exposes news and earnings tools, not wired in.
 
-Last verified 2026-09-23: `./check.sh` 341 passing; `./scripts/trader robinhood verify` passing against the real server.
+Last verified 2026-09-23: `./check.sh` 346 passing; `./scripts/trader robinhood verify` passing against the real server.
+
+- [x] 2026-10-17: found the engine HALTED since 2026-09-24 17:49 UTC (watchdog: 6 market-data failures). Sep 24: every
+      Robinhood call failed with "MCPError: Connection closed" for 14 min (cause unknown; logs overwritten). Oct 2: the
+      access token (expires_in ~9.6 days) expired and was never refreshed: the MCP library loads stored tokens without
+      an expiry, so it sent the stale token and answered the 401 with a browser login. Fixed (RefreshingOAuth: expiry
+      from the save time, real token endpoint from Robinhood's metadata); refresh verified against the real server.
+      Sep 24 traded 4 times for -$111.84 before the halt. Re-arming is left to the owner.
+- [ ] vLLM: installed in ~/vllm; the Qwen3.8-27B-FP8 download is incomplete (stopped under memory pressure).
 
 ## Bugs found by tests / real runs and fixed (each has a regression test)
 - naive vs aware datetimes from SQLite; clamped stop rounding past the 3% limit; adjusted target rounding onto the market

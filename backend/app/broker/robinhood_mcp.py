@@ -19,6 +19,7 @@ import asyncio
 import hashlib
 import json
 import logging
+import time
 import os
 import re
 import uuid
@@ -30,10 +31,11 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, urlparse
 
+import httpx
 from mcp import ClientSession, types
 from mcp.client.auth import OAuthClientProvider, TokenStorage
 from mcp.client.streamable_http import create_mcp_http_client, streamable_http_client
-from mcp.shared.auth import AuthorizationCodeResult, OAuthClientInformationFull, OAuthClientMetadata, OAuthToken
+from mcp.shared.auth import AuthorizationCodeResult, OAuthClientInformationFull, OAuthClientMetadata, OAuthMetadata, OAuthToken
 
 from app.broker.base import BrokerError
 from app.core.types import (
@@ -63,7 +65,12 @@ class FileTokenStorage(TokenStorage):
         return OAuthToken.model_validate(d) if d else None
 
     async def set_tokens(self, tokens: OAuthToken) -> None:
-        self._write({**self._read(), "tokens": tokens.model_dump(mode="json")})
+        self._write({**self._read(), "tokens": tokens.model_dump(mode="json"), "obtained_at": time.time()})
+
+    def obtained_at(self) -> float | None:
+        """When the stored tokens were issued (older files: when the file was last written)."""
+        d = self._read()
+        return d.get("obtained_at") or (self.path.stat().st_mtime if self.path.exists() else None)
 
     async def get_client_info(self) -> OAuthClientInformationFull | None:
         d = self._read().get("client")
@@ -132,6 +139,28 @@ async def _wait_for_callback() -> AuthorizationCodeResult:
             server.close()
 
 
+class RefreshingOAuth(OAuthClientProvider):
+    """The MCP library loads stored tokens without their expiry, so it treats them as valid
+    forever and, on the 401 that follows, starts a browser login a headless engine cannot
+    finish. Give it the expiry (with margin) and the real token endpoint so it refreshes."""
+
+    async def _initialize(self) -> None:
+        await super()._initialize()
+        tok, issued = self.context.current_tokens, self.context.storage.obtained_at()
+        if tok and tok.expires_in and issued:
+            self.context.token_expiry_time = issued + tok.expires_in - 300
+        if self.context.oauth_metadata is None:
+            u = urlparse(self.context.server_url)
+            url = f"{u.scheme}://{u.netloc}/.well-known/oauth-authorization-server{u.path}"
+            try:
+                async with httpx.AsyncClient(timeout=10) as c:
+                    r = await c.get(url)
+                if r.status_code == 200:
+                    self.context.oauth_metadata = OAuthMetadata.model_validate_json(r.content)
+            except (httpx.HTTPError, ValueError):
+                pass  # the library falls back to its own discovery on a 401
+
+
 class RobinhoodMCP:
     """A persistent, authenticated MCP session."""
 
@@ -154,7 +183,7 @@ class RobinhoodMCP:
             print(f"\nOpen this URL to authorise AI Trader with Robinhood:\n\n  {auth_url}\n")
             webbrowser.open(auth_url)
 
-        return OAuthClientProvider(
+        return RefreshingOAuth(
             server_url=self.url,
             client_metadata=OAuthClientMetadata(
                 client_name="AI Trader", redirect_uris=[REDIRECT_URI], grant_types=["authorization_code", "refresh_token"],

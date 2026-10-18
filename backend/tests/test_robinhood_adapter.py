@@ -306,3 +306,28 @@ async def test_catalysts_reach_the_agents_and_a_failure_does_not_block_deliberat
     rig.llm.calls.clear()
     await rig.tick(entry=True)
     assert any(a == "portfolio_manager" for a, _ in rig.llm.calls)
+
+
+async def test_stored_tokens_get_their_expiry_so_the_library_refreshes_instead_of_relogging(tmp_path):
+    import json
+    import time
+    from mcp.shared.auth import OAuthMetadata, OAuthToken
+    from app.broker.robinhood_mcp import FileTokenStorage, RobinhoodMCP
+    store = FileTokenStorage(tmp_path / "robinhood_tokens.json")
+    await store.set_tokens(OAuthToken(access_token="a", token_type="Bearer", expires_in=3600, refresh_token="r"))
+    assert abs(store.obtained_at() - time.time()) < 5
+    d = json.loads(store.path.read_text())
+    d["obtained_at"] = time.time() - 7200  # issued two hours ago: expired
+    store.path.write_text(json.dumps(d))
+    auth = RobinhoodMCP("https://agent.example/mcp/trading", tmp_path)._auth()
+    auth.context.oauth_metadata = OAuthMetadata(issuer="https://agent.example/mcp/trading", authorization_endpoint="https://x/auth",
+                                                token_endpoint="https://api.example/oauth2/token/")
+    await auth._initialize()
+    assert not auth.context.is_token_valid() and auth.context.can_refresh_token() is False  # no client registered in this test
+    d["obtained_at"] = time.time()
+    store.path.write_text(json.dumps(d))
+    await auth._initialize()
+    assert auth.context.is_token_valid()  # fresh: expiry = issue time + expires_in - 5 min margin
+    legacy = {k: v for k, v in d.items() if k != "obtained_at"}  # files written before this fix: use the file time
+    store.path.write_text(json.dumps(legacy))
+    assert abs(store.obtained_at() - store.path.stat().st_mtime) < 1
